@@ -1,7 +1,7 @@
 import React from 'react';
 import { User } from 'lucide-react';
 
-function Avatar({ src, alt = 'Avatar', size = 'md', isOnline = false }) {
+const Avatar = ({ src, alt = 'Avatar', size = 'md', isOnline = false }) => {
     const sizeClasses = {
         sm: 'h-8 w-8',
         md: 'h-11 w-11',

@@ -3,7 +3,7 @@ import IconButton from '@/shared/ui/IconButton';
 import { Send } from 'lucide-react';
 import { Paperclip, Smile } from 'lucide-react';
 
-function MessageInput() {
+const MessageInput = () => {
     const [text, setText] = useState('');
 
     const handleSubmit = (e) => {
@@ -16,7 +16,7 @@ function MessageInput() {
     };
 
     return (
-        <footer className="p-3 border-t border-gray-200 bg-gray-100">
+        <footer className="p-3 border-t border-gray-200 bg-gray-100 w-full">
             <form onSubmit={handleSubmit} className="flex items-center gap-3">
                 <IconButton Icon={Smile} />
                 <IconButton Icon={Paperclip} />

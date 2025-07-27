@@ -1,7 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 
-function MessageBubble({ message, isOwnMessage }) {
+const MessageBubble = ({ message, isOwnMessage }) => {
     const bubbleClasses = clsx(
         'rounded-xl px-4 py-2 max-w-sm md:max-w-md',
         isOwnMessage 

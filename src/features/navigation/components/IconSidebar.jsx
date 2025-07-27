@@ -1,7 +1,7 @@
 import React from 'react';
 import { Menu, MessageSquareText, Users, Settings } from 'lucide-react';
 
-function IconSidebar({ activeMenu, onMenuSelect, isExpanded, onToggle }) {
+const IconSidebar = ({ activeMenu, onMenuSelect, isExpanded, onToggle, onCloseMobile }) => {
     const menuItems = [
         { id: 'conversations', text: 'Percakapan', icon: <MessageSquareText size={24} />, notificationCount: 93 },
         { id: 'contacts', text: 'Kontak', icon: <Users size={24} />, notificationCount: 0 },
@@ -9,6 +9,14 @@ function IconSidebar({ activeMenu, onMenuSelect, isExpanded, onToggle }) {
     ];
     
     const iconContainerWidth = "w-16"; 
+
+    const handleHeaderClick = () => {
+        if(window.innerWidth < 768){
+            onCloseMobile();
+        } else{
+            onToggle();
+        }
+    }
 
     return (
         <div
@@ -20,7 +28,7 @@ function IconSidebar({ activeMenu, onMenuSelect, isExpanded, onToggle }) {
         >
             <div className="flex h-16 items-center border-b border-gray-200 flex-shrink-0 px-2 py-2">
                 <div 
-                    onClick={onToggle}
+                    onClick={handleHeaderClick}
                     className="flex w-full h-full items-center cursor-pointer group rounded-lg text-gray-500 hover:bg-gray-200 hover:text-gray-700"
                 >
                     <div className={`flex justify-center items-center h-full ${iconContainerWidth} flex-shrink-0`}>

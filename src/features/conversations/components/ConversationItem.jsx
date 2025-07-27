@@ -1,7 +1,7 @@
 import React from 'react';
 import Avatar from '@/shared/ui/Avatar';
 
-function ConversationItem({ data }) {
+const ConversationItem = ({ data }) => {
     // const handleClick = () => { dispatch(setActiveConversation(data.id)) };
     return (
         <div /*onClick={handleClick}*/ className="flex items-center p-3 hover:bg-gray-200 cursor-pointer">

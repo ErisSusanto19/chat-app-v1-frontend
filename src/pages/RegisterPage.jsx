@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import RegisterForm from '../features/auth/components/RegisterForm';
 import { resetState } from '../features/auth/authSlice';
 
-function RegisterPage() {
+const RegisterPage = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { user, isAuthenticated, error } = useSelector(state => state.auth);

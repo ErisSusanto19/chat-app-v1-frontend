@@ -1,7 +1,7 @@
 import React from 'react';
 import { Search } from 'lucide-react';
 
-function SearchBar({ placeholder, value, onChange }) {
+const SearchBar = ({ placeholder, value, onChange }) => {
     return (
         <div className="relative p-3">
             <div className="relative">

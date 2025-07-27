@@ -1,7 +1,7 @@
 import React from 'react';
 import ConversationItem from './ConversationItem';
 
-function ConversationList() {
+const ConversationList = () => {
     // const { conversations } = useSelector(state => state.conversations);
     const conversations = [/* data dummy */]; // Ganti dengan data dari Redux/API
 

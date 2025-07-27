@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import LoginForm from '../features/auth/components/LoginForm';
 import { resetState } from '../features/auth/authSlice';
 
-function LoginPage() {
+const LoginPage = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { user, isAuthenticated, error } = useSelector(state => state.auth);

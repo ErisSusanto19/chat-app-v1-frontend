@@ -2,7 +2,7 @@ import React from 'react';
 import Avatar from '@/shared/ui/Avatar';
 import { EllipsisVertical, MessageSquare } from 'lucide-react';
 
-function SidebarHeader() {
+const SidebarHeader = () => {
     // const { user } = useSelector(state => state.auth);
     return (
         <header className="flex items-center justify-between p-3 bg-gray-200">
