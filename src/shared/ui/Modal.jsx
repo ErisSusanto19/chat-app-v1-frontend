@@ -1,7 +1,7 @@
 import React from 'react';
 import { X } from 'lucide-react';
 
-const Modal = ({ isOpen, onClose, title, children }) => {
+const Modal = ({ isOpen, onClose, title, children, headerActions }) => {
     if (!isOpen) {
         return null;
     }
@@ -19,14 +19,17 @@ const Modal = ({ isOpen, onClose, title, children }) => {
                 onClick={handleContentClick}
                 className="bg-white rounded-lg shadow-xl w-full max-w-md flex flex-col"
             >
-                <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                    <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
-                    <button 
-                        onClick={onClose} 
-                        className="text-gray-400 hover:text-gray-600 p-1 rounded-full"
-                    >
-                        <X size={24} />
-                    </button>
+                <div className="flex items-center justify-start p-4 border-b border-gray-200">
+                    <h2 className="text-lg font-semibold text-gray-800 flex-grow">{title}</h2>
+                    <div className="flex items-center space-x-2 flex-shrink-0">
+                        {headerActions}
+                        <button 
+                            onClick={onClose} 
+                            className="text-gray-400 hover:text-gray-600 p-1 rounded-full"
+                        >
+                            <X size={24} />
+                        </button>
+                    </div>
                 </div>
 
                 <div className="p-6">

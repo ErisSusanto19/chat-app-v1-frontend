@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { useDispatch } from 'react-redux';
 import { addContact, editContact } from '../contactThunk';
 import toast from 'react-hot-toast';
+import Button from '@/shared/ui/Button'
 
 const contactSchema = z.object({
     name: z.string().min(1, { message: "Name is required." }),
@@ -71,10 +72,10 @@ const ContactFormModal = ({ isOpen, onClose, contactToEdit }) => {
                 </div>
                 
                 <div className="flex justify-end space-x-3 pt-4">
-                    <button type="button" onClick={onClose} disabled={isSubmitting}>Cancel</button>
-                    <button type="submit" disabled={isSubmitting}>
-                        {isSubmitting ? 'Saving...' : (isEditMode ? 'Save Changes' : 'Save Contact')}
-                    </button>
+                    <Button type="button" onClick={onClose} disabled={isSubmitting} secondary={true}>Cancel</Button>
+                    <Button type="submit" disabled={isSubmitting} isLoading={isSubmitting}>
+                        {isEditMode ? 'Save Changes' : 'Save Contact'}
+                    </Button>
                 </div>
             </form>
         </Modal>

@@ -1,15 +1,24 @@
 import React from 'react';
 import { User } from 'lucide-react';
+import clsx from 'clsx';
 
-const Avatar = ({ src, alt = 'Avatar', size = 'md', isOnline = false }) => {
+const Avatar = ({ src, alt = 'Avatar', size = 'md', isOnline = false, className, fallbackText }) => {
+    
     const sizeClasses = {
-        sm: 'h-8 w-8',
-        md: 'h-11 w-11',
-        lg: 'h-16 w-16',
+        sm: 'h-8 w-8 text-sm',
+        md: 'h-11 w-11 text-lg',
+        lg: 'h-16 w-16 text-2xl',
+        xl: 'h-48 w-48 text-7xl'
     };
 
     return (
-        <div className={`relative inline-block ${sizeClasses[size]}`}>
+        <div 
+            className={clsx(
+                'relative inline-block flex-shrink-0',
+                sizeClasses[size],
+                className
+            )}
+        >
             {src ? (
                 <img
                     src={src}
@@ -17,8 +26,12 @@ const Avatar = ({ src, alt = 'Avatar', size = 'md', isOnline = false }) => {
                     className="h-full w-full rounded-full object-cover"
                 />
             ) : (
-                <div className="h-full w-full rounded-full bg-gray-300 flex items-center justify-center">
-                    <User className="text-white" size={size === 'sm' ? 16 : 24} />
+                <div className="h-full w-full rounded-full bg-gray-400 flex items-center justify-center font-semibold text-white">
+                    {fallbackText ? (
+                        <span>{fallbackText}</span>
+                    ) : (
+                        <User size={size === 'sm' ? 16 : 24} />
+                    )}
                 </div>
             )}
 

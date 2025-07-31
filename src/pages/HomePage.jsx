@@ -3,6 +3,7 @@ import IconSidebar from '../features/navigation/components/IconSidebar';
 import ListPanel from '../features/shared-panel/components/ListPanel';
 import MainContent from '../features/shared-panel/components/MainContent';
 import ContactFormModal from '../features/contacts/components/ContactFormModal';
+import ProfileModal from '../features/profile/components/ProfileModal';
 import {SquarePen, ListFilter, UserPlus} from 'lucide-react'
 
 const MENU_CONFIG = {
@@ -31,6 +32,8 @@ const HomePage = () => {
     const [selectedId, setSelectedId] = useState(null);
     
     const [isMobileMode, setIsMobileMode] = useState(false)
+
+    const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
     
     const [activeModal, setActiveModal] = useState(null);
     const closeModal = () => setActiveModal(null);
@@ -83,6 +86,7 @@ const HomePage = () => {
                         setSelectedId(null);
                         setIsMobileMode(false);
                     }}
+                    onProfileClick={() => setIsProfileModalOpen(true)}
                 />
             </div>
             {isMobileMode && (
@@ -99,6 +103,7 @@ const HomePage = () => {
                         <ListPanel 
                             activeMenu={activeMenu} 
                             onItemSelected={(type, id) => setSelectedId(id)}
+                            selectedId={selectedId}
                             onShowMenu={handleToggleMobileMode}
                             title={currentConfig.title}
                             headerAction={headerActions}
@@ -120,6 +125,13 @@ const HomePage = () => {
                 <ContactFormModal 
                     isOpen={true}
                     onClose={closeModal} 
+                />
+            )}
+
+            {isProfileModalOpen && (
+                <ProfileModal 
+                    isOpen={isProfileModalOpen} 
+                    onClose={() => setIsProfileModalOpen(false)} 
                 />
             )}
         </div>

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchContacts } from '../contactThunk';
 import PageLoader from '@/shared/ui/PageLoader'
 
-const ContactList = ({ onContactSelect }) => {
+const ContactList = ({ onContactSelect, selectedId }) => {
   const dispatch = useDispatch()
   const {items: contacts, loading, error} = useSelector(state => state.contacts)
 
@@ -32,7 +32,8 @@ const ContactList = ({ onContactSelect }) => {
           <ContactItem 
             key={contact._id} 
             contact={contact} 
-            onSelect={onContactSelect} 
+            onSelect={onContactSelect}
+            isSelected={contact._id === selectedId}
           />
         ))}
     </div>

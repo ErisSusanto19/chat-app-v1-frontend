@@ -1,10 +1,12 @@
 import React from 'react';
 import ChatWindow from '@/features/messages/components/ChatWindow';
 import ContactDetailContainer from '../../contacts/components/ContactDetailContainer';
+import ProfileContainer from '../../profile/components/ProfileContainer';
 
 const MAIN_CONTENT_MAP = {
     contacts: ContactDetailContainer,
     conversations: ChatWindow,
+    profile: ProfileContainer
 };
 
 const MainContent = ({ activeMenu, selectedId, onBack, onShowMenu }) => {
@@ -32,8 +34,6 @@ const MainContent = ({ activeMenu, selectedId, onBack, onShowMenu }) => {
                 conversationId={selectedId}
                 onBack={onBack}
             />
-            {/* {activeMenu === 'conversations' && <ChatWindow conversationId={selectedId} onBack={onBack}/>}
-            {activeMenu === 'contacts' && <ContactDetail contactId={selectedId} />} */}
         </div>
     );
 }

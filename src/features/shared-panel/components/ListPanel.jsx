@@ -4,7 +4,7 @@ import ConversationList from '@/features/conversations/components/ConversationLi
 import ContactList from '@/features/contacts/components/ContactList'; 
 import { SquarePen, ListFilter, Menu } from 'lucide-react';
 
-const ListPanel = ({ activeMenu, onItemSelected, onShowMenu, title, headerAction, searchPlaceholder }) => {
+const ListPanel = ({ activeMenu, onItemSelected, onShowMenu, title, headerAction, searchPlaceholder, selectedId }) => {
     return (
         <div className="flex flex-col h-full bg-white border-r border-gray-200">
             <div className="flex h-16 items-center justify-between px-4 border-b border-gray-200 flex-shrink-0">
@@ -26,7 +26,7 @@ const ListPanel = ({ activeMenu, onItemSelected, onShowMenu, title, headerAction
                     <ConversationList onConversationSelect={(id) => onItemSelected('conversation', id)} />
                 )}
                 {activeMenu === 'contacts' && (
-                    <ContactList onContactSelect={(id) => onItemSelected('contact', id)} />
+                    <ContactList onContactSelect={(id) => onItemSelected('contact', id)} selectedId={selectedId} />
                 )}
             </div>
         </div>

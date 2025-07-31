@@ -44,16 +44,10 @@ export const fetchContactById = createAsyncThunk(
 export const editContact = createAsyncThunk(
     'contacts/edit',
     async ({id, data}, { rejectWithValue }) => {
-        try {
-            console.log(id, '<<< id contact');
-            console.log(data, '<<< data payload for edit');
-            
+        try {          
             const response = await contact.updateContact(id, data)
-            console.log(response, '<<< cek resposne edit contact')
             return response
         } catch (error) {
-            console.log(error, '<<< cek error redit contact');
-            
             const errorMessage = error.response?.data?.message || error.message || 'Update contact failed.'
             return rejectWithValue(errorMessage) 
         }
