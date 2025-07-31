@@ -8,7 +8,11 @@ function App() {
   return (
     <Provider store={store}>
       <RouterProvider router={router}/>
-      <Toaster position='top-center' reverseOrder={false} toastOptions={{duration: 3000, style: {background: "#333", color: "#fff"}}}/>
+      <Toaster 
+        position='top-center' 
+        reverseOrder={false} 
+        toastOptions={{duration: 3000, style: {background: "#333", color: "#fff"}}}
+      />
     </Provider>
   )
 }

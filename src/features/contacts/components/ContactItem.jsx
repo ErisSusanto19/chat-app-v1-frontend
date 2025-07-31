@@ -1,11 +1,8 @@
 import Avatar from '@/shared/ui/Avatar';
 
 const ContactItem = ({ contact, onSelect }) => {
-    const displayName = contact.detail?.name || contact.name;
+    const displayName = contact.name || contact.detail?.name;
     const displayImage = contact.detail?.image;
-
-    console.log(contact, '<<< cek from contact item');
-    
 
     return (
         <div

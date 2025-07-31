@@ -1,50 +1,19 @@
 import React from 'react';
 import Avatar from '@/shared/ui/Avatar';
-import { ArrowLeft, MessageSquare, Phone, MoreVertical } from 'lucide-react';
+import { ArrowLeft, MessageSquare, Phone, Edit, Trash2 } from 'lucide-react';
+import DropdownMenu, { DropdownMenuItem } from '@/shared/ui/DropdownMenu'
 
-const dummyContacts = [
-    {
-        "_id": "6885d0f52b7d20a4a2460244",
-        "userId": "6876f7793bc5cb90ccecd8ad",
-        "name": "Old man",
-        "email": "raiden@mail.com",
-        "status": "Registered",
-        "detail": {
-            "_id": "67b033af573431b6adb960f8",
-            "name": "Lord Raiden",
-            "email": "raiden@mail.com",
-            "image": 'https://i.pravatar.cc/150?u=raiden'
-        }
-    },
-    {
-        "_id": "6885d248ca3ed4cc24f7bbbe",
-        "userId": "6876f7793bc5cb90ccecd8ad",
-        "name": "Blind Guy",
-        "email": "kenshi@mail.com",
-        "status": "Registered",
-        "detail": {
-            "_id": "67e650649b29dccaf9326cec",
-            "name": "Kenshi",
-            "email": "kenshi@mail.com",
-            "image": null
-        }
-    }
-];
-
-const ContactDetail = ({ contactId, onBack }) => {
-  console.log(contactId, '<<< cek from contact detail');
-  
-    const contact = dummyContacts.find(c => c._id === contactId);
+const ContactDetail = ({ contact, onBack, onEdit, onDelete }) => {    
 
     if (!contact) {
         return (
             <div className="flex h-full items-center justify-center text-gray-500">
-                <p>Select a contact to see the details.</p>
+                <p>Contact not found.</p>
             </div>
         );
     }
     
-    const displayName = contact.detail?.name || contact.name;
+    const displayName = contact.name || contact.detail?.name;
     const displayImage = contact.detail?.image;
 
     return (
@@ -56,9 +25,16 @@ const ContactDetail = ({ contactId, onBack }) => {
                     </button>
                     <h2 className="text-lg font-semibold text-gray-800">Contact Info</h2>
                 </div>
-                <button className="p-2 rounded-full hover:bg-gray-200">
-                    <MoreVertical size={20} />
-                </button>
+                <DropdownMenu>
+                    <DropdownMenuItem onClick={onEdit}>
+                        <Edit size={16} />
+                        <span>Edit Contact</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={onDelete} className="text-red-600">
+                        <Trash2 size={16} />
+                        <span>Delete Contact</span>
+                    </DropdownMenuItem>
+                </DropdownMenu>
             </header>
 
             <main className="flex-1 overflow-y-auto p-6 text-center">
@@ -93,8 +69,8 @@ const ContactDetail = ({ contactId, onBack }) => {
                             <p className="text-md text-gray-800">{contact.status}</p>
                         </div>
                         <div>
-                            <p className="text-sm text-gray-500">Nickname</p>
-                            <p className="text-md text-gray-800">{contact.name}</p>
+                            <p className="text-sm text-gray-500">Name</p>
+                            <p className="text-md text-gray-800">{contact.detail?.name || '-'}</p>
                         </div>
                     </div>
                 </div>

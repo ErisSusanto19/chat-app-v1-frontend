@@ -5,6 +5,7 @@ import { loginUser } from '../authThunk';
 import Input from '@/shared/ui/Input';
 import Button from '@/shared/ui/Button';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 function LoginForm() {
     const { loading } = useSelector(state => state.auth);
@@ -13,8 +14,13 @@ function LoginForm() {
         defaultValues: { email: "", password: "" }
     });
 
-    const onSubmit = (data) => {
-        dispatch(loginUser(data));
+    const onSubmit = async (data) => {
+        const resultAction = await dispatch(loginUser(data));
+        if (loginUser.fulfilled.match(resultAction)) {
+            toast.success(`Welcome back, ${resultAction.payload.name}!`);
+        } else if (loginUser.rejected.match(resultAction)) {
+            toast.error(resultAction.payload);
+        }
     };
 
     return (

@@ -1,39 +1,34 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ContactItem from './ContactItem';
-
-const dummyContacts = [
-    {
-        "_id": "6885d0f52b7d20a4a2460244",
-        "userId": "6876f7793bc5cb90ccecd8ad",
-        "name": "Old man",
-        "email": "raiden@mail.com",
-        "status": "Registered",
-        "detail": {
-            "_id": "67b033af573431b6adb960f8",
-            "name": "Lord Raiden",
-            "email": "raiden@mail.com",
-            "image": 'https://i.pravatar.cc/150?u=raiden'
-        }
-    },
-    {
-        "_id": "6885d248ca3ed4cc24f7bbbe",
-        "userId": "6876f7793bc5cb90ccecd8ad",
-        "name": "Blind Guy",
-        "email": "kenshi@mail.com",
-        "status": "Registered",
-        "detail": {
-            "_id": "67e650649b29dccaf9326cec",
-            "name": "Kenshi",
-            "email": "kenshi@mail.com",
-            "image": null
-        }
-    }
-];
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchContacts } from '../contactThunk';
+import PageLoader from '@/shared/ui/PageLoader'
 
 const ContactList = ({ onContactSelect }) => {
+  const dispatch = useDispatch()
+  const {items: contacts, loading, error} = useSelector(state => state.contacts)
+
+  useEffect(() => {
+    if(contacts.length == 0){
+      dispatch(fetchContacts())
+    }
+  }, [dispatch])
+
+  if(loading && contacts.length == 0){
+    return <PageLoader message="Loading contacts..."/>
+  }
+
+  if (error) {
+    return <div className="p-4 text-center text-red-500">Failed to load contacts: {error}</div>;
+  }
+  
+  if (!loading && contacts.length === 0) {
+    return <div className="p-4 text-center text-gray-500">No contacts found.</div>
+  }
+
   return (
     <div className="divide-y divide-gray-200">
-        {dummyContacts.map(contact => (
+        {contacts.map(contact => (
           <ContactItem 
             key={contact._id} 
             contact={contact} 

@@ -1,54 +1,72 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import IconSidebar from '../features/navigation/components/IconSidebar';
 import ListPanel from '../features/shared-panel/components/ListPanel';
 import MainContent from '../features/shared-panel/components/MainContent';
+import ContactFormModal from '../features/contacts/components/ContactFormModal';
 import {SquarePen, ListFilter, UserPlus} from 'lucide-react'
 
 const MENU_CONFIG = {
     conversations: {
         title: 'Chats',
         searchPlaceholder: "Search or start new chat",
-        headerActions: (
-            <>
-                <button className="p-1 text-gray-500 hover:text-gray-800" title="New Chat">
-                    <SquarePen size={20} />
-                </button>
-                <button className="p-1 text-gray-500 hover:text-gray-800" title="Filter Chats">
-                    <ListFilter size={20} />
-                </button>
-            </>
-        ),
+        actions: ['newChat', 'filterChats'],
     },
     contacts: {
         title: 'Contacts',
         searchPlaceholder: "Search contacts by name or email",
-        headerActions: (
-            <button className="p-1 text-gray-500 hover:text-gray-800" title="Add Contact">
-                <UserPlus size={20} />
-            </button>
-        ),
+        actions: ['addContact'],
     },
     settings: {
         title: 'Settings',
+        actions: null,
         headerActions: null,
     },
     
 };
 
 const HomePage = () => {
+
     const [isExpanded, setIsExpanded] = useState(false);
     const [activeMenu, setActiveMenu] = useState('conversations');
     const [selectedId, setSelectedId] = useState(null);
-
+    
     const [isMobileMode, setIsMobileMode] = useState(false)
-
+    
+    const [activeModal, setActiveModal] = useState(null);
+    const closeModal = () => setActiveModal(null);
+    
     const handleToggleSidebar = () => {
         setIsExpanded(prev => !prev);
     };
-
+    
     const handleToggleMobileMode = () => {
         setIsMobileMode(prev => !prev);
     };
+
+    const headerActions = useMemo(() => {
+        const config = MENU_CONFIG[activeMenu];
+        if (!config || !config.actions) return null;
+
+        return (
+            <>
+                {config.actions.includes('newChat') && (
+                    <button className="p-1 text-gray-500 hover:text-gray-800" title="New Chat">
+                        <SquarePen size={20} />
+                    </button>
+                )}
+                {config.actions.includes('filterChats') && (
+                    <button className="p-1 text-gray-500 hover:text-gray-800" title="Filter Chats">
+                        <ListFilter size={20} />
+                    </button>
+                )}
+                {config.actions.includes('addContact') && (
+                    <button onClick={() => setActiveModal('addContact')} className="p-1 text-gray-500 hover:text-gray-800" title="Add Contact">
+                        <UserPlus size={20} />
+                    </button>
+                )}
+            </>
+        );
+    }, [activeMenu]);
 
     const currentConfig = MENU_CONFIG[activeMenu];
 
@@ -83,7 +101,7 @@ const HomePage = () => {
                             onItemSelected={(type, id) => setSelectedId(id)}
                             onShowMenu={handleToggleMobileMode}
                             title={currentConfig.title}
-                            headerAction={currentConfig.headerActions}
+                            headerAction={headerActions}
                             searchPlaceholder={currentConfig.searchPlaceholder}
                         />
                     )}
@@ -96,8 +114,14 @@ const HomePage = () => {
                         onShowMenu={handleToggleMobileMode}
                     />
                 </div>
-
             </main>
+
+            {activeModal === 'addContact' && (
+                <ContactFormModal 
+                    isOpen={true}
+                    onClose={closeModal} 
+                />
+            )}
         </div>
     );
 }

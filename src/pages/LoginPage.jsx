@@ -12,15 +12,11 @@ const LoginPage = () => {
 
     useEffect(() => {
         if (isAuthenticated && user) {
-            toast.success(`Welcome back, ${user.name}`);
-            navigate("/");
+            toast.success('toastMessage', `Welcome back, ${user.name}!`);
+            
+            navigate('/', { replace: true });
         }
-
-        if (error) {
-            toast.error(error);
-            dispatch(resetState());
-        }
-    }, [isAuthenticated, user, error, navigate, dispatch]);
+    }, [isAuthenticated, user, navigate]);
 
     return (
         <div className='flex min-h-screen flex-col justify-center py-12 sm:px-6 lg:px-8 bg-gray-100'>

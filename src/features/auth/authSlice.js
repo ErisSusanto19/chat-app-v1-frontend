@@ -10,7 +10,7 @@ const initialState = {
     accessToken: accessToken || null,
     isAuthenticated: !!accessToken,
     loading: false,
-    error: null
+    error: null,
 }
 
 const authSlice = createSlice({
@@ -26,7 +26,7 @@ const authSlice = createSlice({
             state.isAuthenticated = false
             state.loading = false
             state.error = null
-        }
+        },
     },
     extraReducers: (builder) => {
         handleRegisterUser(builder, { registerUser })

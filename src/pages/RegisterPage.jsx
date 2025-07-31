@@ -8,19 +8,20 @@ import { resetState } from '../features/auth/authSlice';
 const RegisterPage = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { user, isAuthenticated, error } = useSelector(state => state.auth);
+    const { isAuthenticated, error } = useSelector(state => state.auth);
 
     useEffect(() => {
-        if (isAuthenticated && user) {
-            toast.success(`Welcome, ${user.name}!`);
-            navigate("/");
+        if (isAuthenticated) {
+            navigate('/');
         }
+    }, [isAuthenticated, navigate]);
 
+    useEffect(() => {
         if (error) {
             toast.error(error);
-            dispatch(resetState());
+            dispatch(resetState()); 
         }
-    }, [isAuthenticated, user, error, navigate, dispatch]);
+    }, [error, dispatch]);
     
     return (
         <div className='flex min-h-screen flex-col justify-center py-12 sm:px-6 lg:px-8 bg-gray-100'>

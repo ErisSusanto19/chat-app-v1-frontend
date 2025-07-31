@@ -1,3 +1,4 @@
+import toast from 'react-hot-toast'
 import * as auth from './authApi'
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
@@ -27,3 +28,18 @@ export const loginUser = createAsyncThunk(
         }
     }
 )
+
+// export const handleWelcome = createAsyncThunk(
+//     'auth/handleWelcome',
+//     async (_, { getState, dispatch }) => {
+//         const { auth } = getState();
+
+//         if (auth.welcomeToastStatus === 'pending' && auth.user) {
+//             sessionStorage.removeItem('justLoggedIn');
+
+//             dispatch(toastShown());
+            
+//             toast.success(`Welcome, ${auth.user.name}!`);
+//         }
+//     }
+// )

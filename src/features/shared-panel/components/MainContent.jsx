@@ -1,6 +1,11 @@
 import React from 'react';
 import ChatWindow from '@/features/messages/components/ChatWindow';
-import ContactDetail from '@/features/contacts/components/ContactDetail'; 
+import ContactDetailContainer from '../../contacts/components/ContactDetailContainer';
+
+const MAIN_CONTENT_MAP = {
+    contacts: ContactDetailContainer,
+    conversations: ChatWindow,
+};
 
 const MainContent = ({ activeMenu, selectedId, onBack, onShowMenu }) => {
   
@@ -14,10 +19,21 @@ const MainContent = ({ activeMenu, selectedId, onBack, onShowMenu }) => {
         return <WelcomeScreen />;
     }
 
+    const ComponentToRender = MAIN_CONTENT_MAP[activeMenu]
+
+    if (!ComponentToRender) {
+        return <WelcomeScreen />;
+    }
+
     return (
         <div className="flex flex-1 bg-white">
-            {activeMenu === 'conversations' && <ChatWindow conversationId={selectedId} onBack={onBack}/>}
-            {activeMenu === 'contacts' && <ContactDetail contactId={selectedId} />}
+            <ComponentToRender 
+                id={selectedId}
+                conversationId={selectedId}
+                onBack={onBack}
+            />
+            {/* {activeMenu === 'conversations' && <ChatWindow conversationId={selectedId} onBack={onBack}/>}
+            {activeMenu === 'contacts' && <ContactDetail contactId={selectedId} />} */}
         </div>
     );
 }

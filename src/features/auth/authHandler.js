@@ -14,7 +14,7 @@ export const handleRegisterUser = (builder, { registerUser }) => {
             state.accessToken = access_token
             state.isAuthenticated = true
             state.loading = false
-            state.loading = null
+            state.error = null
         })
         .addCase(registerUser.rejected, (state, action) => {
             state.loading = false

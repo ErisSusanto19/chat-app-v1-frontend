@@ -54,11 +54,14 @@ export const handleEditContact = (builder, { editContact }) => {
             state.error = null
         })
         .addCase(editContact.fulfilled, (state, action) => {
-            const index = state.items.findIndex(item => item.id === action.payload.id)
+            state.loading = false
+            const updatedContact = action.payload;
+
+            const index = state.items.findIndex(item => item._id === updatedContact._id)
             if (index !== -1) {
                 state.items[index] = action.payload
             }
-            state.loading = false
+            state.currentContact = updatedContact
         })
         .addCase(editContact.rejected, (state, action) => {
             state.loading = false
@@ -73,9 +76,9 @@ export const handleRemoveContact = (builder, { removeContact }) => {
             state.error = null
         })
         .addCase(removeContact.fulfilled, (state, action) => {
-            const deletedId = action.meta.arg
-            state.items = state.items.filter(item => item.id !== deletedId)
             state.loading = false
+            const deletedId = action.payload._id || action.payload;
+            state.items = state.items.filter(item => item._id !== deletedId)
         })
         .addCase(removeContact.rejected, (state, action) => {
             state.loading = false
