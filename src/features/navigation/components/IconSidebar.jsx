@@ -1,7 +1,11 @@
 import React from 'react';
 import { Menu, MessageSquareText, Users, User, Settings } from 'lucide-react';
+import { useSelector } from 'react-redux';
 
 const IconSidebar = ({ activeMenu, onMenuSelect, isExpanded, onToggle, onCloseMobile, onProfileClick }) => {
+
+    const { user } = useSelector((state) => state.auth);
+
     const mainMenuItems = [
         { id: 'conversations', text: 'Percakapan', icon: <MessageSquareText size={24} />, notificationCount: 93 },
         { id: 'contacts', text: 'Kontak', icon: <Users size={24} />, notificationCount: 0 },
@@ -43,11 +47,19 @@ const IconSidebar = ({ activeMenu, onMenuSelect, isExpanded, onToggle, onCloseMo
             >
                 <div className={`w-1 h-8 rounded-r-full transition-colors ${isActive ? 'bg-amber-500' : 'bg-transparent'}`}></div>
                 <div className={`relative flex justify-center items-center ${iconContainerWidth} h-full flex-shrink-0`}>
-                    {item.icon}
+                    {item.id === 'profile' && user?.image ? (
+                        <img 
+                            src={user.image} 
+                            alt="Profile"
+                            className="h-8 w-8 rounded-full object-cover"
+                        />
+                    ) : (
+                        item.icon
+                    )}
+
                     {item.notificationCount > 0 && (
-                        <div className="absolute top-3 right-3 flex items-center justify-center 
-                                       bg-green-500 text-white text-[10px] font-bold 
-                                       rounded-full min-w-[20px] h-5 px-1">
+                        <div 
+                            className="absolute top-3 right-3 flex items-center justify-center bg-green-500 text-white text-[10px] font-bold rounded-full min-w-[20px] h-5 px-1">
                             {item.notificationCount}
                         </div>
                     )}

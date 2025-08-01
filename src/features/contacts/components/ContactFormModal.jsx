@@ -14,7 +14,7 @@ const contactSchema = z.object({
 });
 
 
-const ContactFormModal = ({ isOpen, onClose, contactToEdit }) => {
+const ContactFormModal = ({ isOpen, onClose, contactToEdit, onSuccess }) => {
     const dispatch = useDispatch()
     const isEditMode = Boolean(contactToEdit);
 
@@ -32,14 +32,21 @@ const ContactFormModal = ({ isOpen, onClose, contactToEdit }) => {
     });
 
     const onSubmit = async (data) => {
-        const resultAction = isEditMode
-            ? await dispatch(editContact({ id: contactToEdit._id, data }))
-            : await dispatch(addContact(data));
+        const isAddMode = !isEditMode;
 
-        const matcher = isEditMode ? editContact : addContact;
+        const resultAction = isAddMode
+            ? await dispatch(addContact(data))
+            : await dispatch(editContact({ id: contactToEdit._id, data }));
+
+        const matcher = isAddMode ? addContact : editContact;
         
         if (matcher.fulfilled.match(resultAction)) {
-            toast.success(`Contact ${isEditMode ? 'updated' : 'added'} successfully!`);
+            toast.success(`Contact ${isAddMode ? 'added' : 'updated'} successfully!`);
+            
+            if (isAddMode && onSuccess) {
+                onSuccess();
+            }
+
             onClose();
         } else if (matcher.rejected.match(resultAction)) {
             toast.error(resultAction.payload);

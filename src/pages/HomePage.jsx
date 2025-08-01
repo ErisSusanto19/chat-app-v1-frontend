@@ -4,7 +4,8 @@ import ListPanel from '../features/shared-panel/components/ListPanel';
 import MainContent from '../features/shared-panel/components/MainContent';
 import ContactFormModal from '../features/contacts/components/ContactFormModal';
 import ProfileModal from '../features/profile/components/ProfileModal';
-import {SquarePen, ListFilter, UserPlus} from 'lucide-react'
+import { SquarePen, ListFilter, UserPlus } from 'lucide-react';
+import useDebounce from '@/hooks/useDebounce';
 
 const MENU_CONFIG = {
     conversations: {
@@ -17,12 +18,6 @@ const MENU_CONFIG = {
         searchPlaceholder: "Search contacts by name or email",
         actions: ['addContact'],
     },
-    settings: {
-        title: 'Settings',
-        actions: null,
-        headerActions: null,
-    },
-    
 };
 
 const HomePage = () => {
@@ -30,20 +25,20 @@ const HomePage = () => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [activeMenu, setActiveMenu] = useState('conversations');
     const [selectedId, setSelectedId] = useState(null);
-    
-    const [isMobileMode, setIsMobileMode] = useState(false)
-
+    const [isMobileMode, setIsMobileMode] = useState(false);
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
     
     const [activeModal, setActiveModal] = useState(null);
     const closeModal = () => setActiveModal(null);
-    
-    const handleToggleSidebar = () => {
-        setIsExpanded(prev => !prev);
-    };
-    
-    const handleToggleMobileMode = () => {
-        setIsMobileMode(prev => !prev);
+
+    const [searchTerm, setSearchTerm] = useState('');
+    const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
+    const handleToggleSidebar = () => setIsExpanded(prev => !prev);
+    const handleToggleMobileMode = () => setIsMobileMode(prev => !prev);
+
+    const handleContactAddedSuccess = () => {
+        setSearchTerm('');
     };
 
     const headerActions = useMemo(() => {
@@ -75,7 +70,7 @@ const HomePage = () => {
 
     return (
         <div className="relative flex h-screen w-screen overflow-hidden bg-white">
-            <div className={`${isMobileMode? 'block' : 'hidden'} md:block`}>
+            <div className={`${isMobileMode ? 'block' : 'hidden'} md:block`}>
                 <IconSidebar 
                     activeMenu={activeMenu} 
                     isExpanded={isExpanded}
@@ -92,13 +87,11 @@ const HomePage = () => {
             {isMobileMode && (
                 <div
                     onClick={handleToggleMobileMode}
-                    className='fixed inset-0 bg:black/30 z-40 md:hidden'
-                >
-
-                </div>
+                    className='fixed inset-0 bg-black/30 z-40 md:hidden'
+                ></div>
             )}
-            <main className={`flex flex-1 transition-all duration-300 ease-in-out md:w-auto ${isExpanded? 'md:pl-16' : 'md:pl-20'}`}>
-                <div className={`w-full flex-shrink-0 md:w-[360px] md:block ${selectedId? 'hidden' : 'block'}`}>
+            <main className={`flex flex-1 transition-all duration-300 ease-in-out md:w-auto ${isExpanded ? 'md:pl-16' : 'md:pl-20'}`}>
+                <div className={`w-full flex-shrink-0 md:w-[360px] md:block ${selectedId ? 'hidden' : 'block'}`}>
                     {currentConfig && (
                         <ListPanel 
                             activeMenu={activeMenu} 
@@ -108,10 +101,13 @@ const HomePage = () => {
                             title={currentConfig.title}
                             headerAction={headerActions}
                             searchPlaceholder={currentConfig.searchPlaceholder}
+                            searchTerm={searchTerm}
+                            onSearchChange={setSearchTerm}
+                            debouncedSearchTerm={debouncedSearchTerm}
                         />
                     )}
                 </div>
-                <div className={`w-full md:flex-1 md:block ${selectedId? 'block' : 'hidden'}`}>
+                <div className={`w-full md:flex-1 md:block ${selectedId ? 'block' : 'hidden'}`}>
                     <MainContent
                         activeMenu={activeMenu}
                         selectedId={selectedId}
@@ -125,6 +121,7 @@ const HomePage = () => {
                 <ContactFormModal 
                     isOpen={true}
                     onClose={closeModal} 
+                    onSuccess={handleContactAddedSuccess} // Teruskan fungsi sukses
                 />
             )}
 
@@ -136,6 +133,6 @@ const HomePage = () => {
             )}
         </div>
     );
-}
+};
 
 export default HomePage;

@@ -17,9 +17,9 @@ export const addContact = createAsyncThunk(
 
 export const fetchContacts = createAsyncThunk(
     'contacts/fetchAll',
-    async (_, { rejectWithValue }) => {
+    async ({ page = 1, search = '' }, { rejectWithValue }) => {
         try {
-            const response = await contact.getContacts()
+            const response = await contact.getContacts({ page, search })
             return response
         } catch (error) {
             const errorMessage = error.response?.data?.message || error.message || 'Fetch contact failed.'

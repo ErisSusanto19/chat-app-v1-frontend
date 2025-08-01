@@ -5,8 +5,13 @@ export const createContact = async (data) => {
     return response.data
 }
 
-export const getContacts = async () => {
-    const response = await axiosInstance.get('/contacts')
+export const getContacts = async ({ page = 1, search = '' }) => {
+    const response = await axiosInstance.get('/contacts', {
+        params: {
+            page,
+            search
+        }
+    })
     return response.data
 }
 

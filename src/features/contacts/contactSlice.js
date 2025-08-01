@@ -17,6 +17,8 @@ import {
 const initialState = {
     items: [],
     currentContact: null,
+    currentPage: 1,
+    totalPages: 1,
     loading: false,
     error: null
 }
@@ -27,6 +29,11 @@ const contactSlice = createSlice({
     reducers: {
         clearCurrentContact: (state) => {
             state.currentContact = null
+        },
+        resetContactList: (state) => {
+            state.items = [];
+            state.currentPage = 1;
+            state.totalPages = 1;
         }
     },
     extraReducers: (builder) => {
@@ -38,6 +45,6 @@ const contactSlice = createSlice({
     }
 })
 
-export const { clearCurrentContact } = contactSlice.actions
+export const { clearCurrentContact, resetContactList } = contactSlice.actions
 
 export default contactSlice.reducer

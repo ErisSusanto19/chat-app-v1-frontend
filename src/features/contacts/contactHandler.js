@@ -22,8 +22,21 @@ export const handleFetchContacts = (builder, { fetchContacts }) => {
             state.error = null
         })
         .addCase(fetchContacts.fulfilled, (state, action) => {
-            state.items = action.payload
             state.loading = false
+
+            const { contacts, totalPages, currentPage } = action.payload;
+            const requestedPage = action.meta.arg?.page || 1;
+
+            if (requestedPage === 1) {
+                state.items = contacts;
+            } else {
+                const existingIds = new Set(state.items.map(item => item._id));
+                const newUniqueContacts = contacts.filter(item => !existingIds.has(item._id));
+                state.items.push(...newUniqueContacts);
+            }
+
+            state.totalPages = totalPages;
+            state.currentPage = parseInt(currentPage, 10);
         })
         .addCase(fetchContacts.rejected, (state, action) => {
             state.loading = false

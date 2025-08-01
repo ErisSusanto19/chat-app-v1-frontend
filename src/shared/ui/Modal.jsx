@@ -17,7 +17,7 @@ const Modal = ({ isOpen, onClose, title, children, headerActions }) => {
         >
             <div
                 onClick={handleContentClick}
-                className="bg-white rounded-lg shadow-xl w-full max-w-md flex flex-col"
+                className="bg-white rounded-lg shadow-xl w-full max-w-md flex flex-col max-h-[90vh]"
             >
                 <div className="flex items-center justify-start p-4 border-b border-gray-200">
                     <h2 className="text-lg font-semibold text-gray-800 flex-grow">{title}</h2>
@@ -32,7 +32,7 @@ const Modal = ({ isOpen, onClose, title, children, headerActions }) => {
                     </div>
                 </div>
 
-                <div className="p-6">
+                <div className="p-6 overflow-y-auto flex-1">
                     {children}
                 </div>
             </div>

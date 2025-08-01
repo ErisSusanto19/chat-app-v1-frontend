@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProfile, editProfile } from '../profileThunk';
+import { resetState } from '../../auth/authSlice'
 import Modal from '@/shared/ui/Modal';
 import ProfileDetailView from './ProfileDetailView';
 import ProfileForm from './ProfileForm';
@@ -8,12 +9,15 @@ import PageLoader from '@/shared/ui/PageLoader';
 import toast from 'react-hot-toast';
 import Button from '@/shared/ui/Button'
 import { Edit } from 'lucide-react'
+import ConfirmationModal from '@/shared/ui/ConfirmationModal';
 import apiClient from '@/services/axiosInstance';
 
 const ProfileModal = ({ isOpen, onClose }) => {
     const dispatch = useDispatch();
     const { data: profile, loading } = useSelector(state => state.profile);
     const [isEditMode, setIsEditMode] = useState(false);
+
+    const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
 
     useEffect(() => {
         if (isOpen && !profile) {
@@ -75,6 +79,14 @@ const ProfileModal = ({ isOpen, onClose }) => {
         }
     };
 
+    const handleConfirmLogout = () => {
+        dispatch(resetState());
+        setIsLogoutConfirmOpen(false);
+        onClose();
+        navigate('/login');
+        toast.success('You have been logged out.');
+    };
+
     const title = isEditMode ? 'Edit Profile' : 'Your Profile';
 
     const editButton = (
@@ -84,23 +96,33 @@ const ProfileModal = ({ isOpen, onClose }) => {
     );
 
     return (
-        <Modal 
-            isOpen={isOpen} 
-            onClose={onClose} 
-            title={title}
-            headerActions={!isEditMode && profile ? editButton : null}
-        >
-            {loading && !profile && <PageLoader />}
-            {profile && (
-                <>
-                    {isEditMode ? (
-                        <ProfileForm user={profile} onSubmit={handleUpdate} onCancel={() => setIsEditMode(false)} />
-                    ) : (
-                        <ProfileDetailView user={profile} />
-                    )}
-                </>
-            )}
-        </Modal>
+        <>
+            <Modal 
+                isOpen={isOpen} 
+                onClose={onClose} 
+                title={title}
+                headerActions={!isEditMode && profile ? editButton : null}
+            >
+                {loading && !profile && <PageLoader />}
+                {profile && (
+                    <>
+                        {isEditMode ? (
+                            <ProfileForm user={profile} onSubmit={handleUpdate} onCancel={() => setIsEditMode(false)} />
+                        ) : (
+                            <ProfileDetailView user={profile} onLogout={() => setIsLogoutConfirmOpen(true)} />
+                        )}
+                    </>
+                )}
+            </Modal>
+
+            <ConfirmationModal
+                isOpen={isLogoutConfirmOpen}
+                onClose={() => setIsLogoutConfirmOpen(false)}
+                onConfirm={handleConfirmLogout}
+                title="Confirm Logout"
+                message="Are you sure you want to log out of your account?"
+            />
+        </>
     );
 };
 

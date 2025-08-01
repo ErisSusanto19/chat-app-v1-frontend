@@ -2,9 +2,21 @@ import React from 'react';
 import SearchBar from '@/shared/ui/SearchBar';
 import ConversationList from '@/features/conversations/components/ConversationList';
 import ContactList from '@/features/contacts/components/ContactList'; 
-import { SquarePen, ListFilter, Menu } from 'lucide-react';
+import { Menu } from 'lucide-react';
 
-const ListPanel = ({ activeMenu, onItemSelected, onShowMenu, title, headerAction, searchPlaceholder, selectedId }) => {
+const ListPanel = ({ 
+    activeMenu, 
+    onItemSelected, 
+    onShowMenu, 
+    title, 
+    headerAction, 
+    searchPlaceholder, 
+    selectedId,
+    searchTerm,
+    onSearchChange,
+    debouncedSearchTerm
+}) => {
+
     return (
         <div className="flex flex-col h-full bg-white border-r border-gray-200">
             <div className="flex h-16 items-center justify-between px-4 border-b border-gray-200 flex-shrink-0">
@@ -19,18 +31,26 @@ const ListPanel = ({ activeMenu, onItemSelected, onShowMenu, title, headerAction
 
             <div className="flex-1 overflow-y-auto">
                 <div className="p-4 border-b border-gray-200">
-                    <SearchBar placeholder={searchPlaceholder} />
+                    <SearchBar 
+                        placeholder={searchPlaceholder}
+                        value={searchTerm}
+                        onChange={(e) => onSearchChange(e.target.value)}
+                    />
                 </div>
 
                 {activeMenu === 'conversations' && (
                     <ConversationList onConversationSelect={(id) => onItemSelected('conversation', id)} />
                 )}
                 {activeMenu === 'contacts' && (
-                    <ContactList onContactSelect={(id) => onItemSelected('contact', id)} selectedId={selectedId} />
+                    <ContactList 
+                        onContactSelect={(id) => onItemSelected('contact', id)} 
+                        selectedId={selectedId}
+                        searchTerm={debouncedSearchTerm}
+                    />
                 )}
             </div>
         </div>
     );
-}
+};
 
 export default ListPanel;

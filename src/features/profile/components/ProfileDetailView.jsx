@@ -1,7 +1,9 @@
 import React from 'react';
 import Avatar from '@/shared/ui/Avatar';
+import { LogOut } from 'lucide-react'
+import Button from '@/shared/ui/Button'
 
-const ProfileDetailView = ({ user }) => {
+const ProfileDetailView = ({ user, onLogout }) => {
     const displayName = user.name || 'No Name';
 
     return (
@@ -20,7 +22,6 @@ const ProfileDetailView = ({ user }) => {
 
             <div className="my-6 border-t border-gray-200"></div>
 
-            {/* <div className="mt-8 pt-6 border-t border-gray-200 text-left space-y-4"> */}
             <div className="text-left space-y-6">
                 <div>
                     <p className="text-sm font-medium text-gray-500">Full Name</p>
@@ -34,6 +35,17 @@ const ProfileDetailView = ({ user }) => {
                     <p className="text-sm font-medium text-gray-500">Phone Number</p>
                     <p className="text-lg text-gray-800">{user.phoneNumber || '-'}</p>
                 </div>
+            </div>
+
+            <div className="mt-8 pt-6 border-t border-gray-200">
+                <Button 
+                    onClick={onLogout} 
+                    danger={true}
+                    fullWidth={true}
+                >
+                    <LogOut size={16} className="mr-2" />
+                    Logout
+                </Button>
             </div>
         </div>
     );
