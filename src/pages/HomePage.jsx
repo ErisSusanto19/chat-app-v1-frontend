@@ -4,6 +4,7 @@ import ListPanel from '../features/shared-panel/components/ListPanel';
 import MainContent from '../features/shared-panel/components/MainContent';
 import ContactFormModal from '../features/contacts/components/ContactFormModal';
 import ProfileModal from '../features/profile/components/ProfileModal';
+import NewConversationModal from '../features/conversations/components/NewConversationModal';
 import { SquarePen, ListFilter, UserPlus } from 'lucide-react';
 import useDebounce from '@/hooks/useDebounce';
 
@@ -48,7 +49,7 @@ const HomePage = () => {
         return (
             <>
                 {config.actions.includes('newChat') && (
-                    <button className="p-1 text-gray-500 hover:text-gray-800" title="New Chat">
+                    <button onClick={() => setActiveModal('newConversation')} className="p-1 ..." title="New Chat">
                         <SquarePen size={20} />
                     </button>
                 )}
@@ -122,6 +123,13 @@ const HomePage = () => {
                     isOpen={true}
                     onClose={closeModal} 
                     onSuccess={handleContactAddedSuccess} // Teruskan fungsi sukses
+                />
+            )}
+
+            {activeModal === 'newConversation' && (
+                <NewConversationModal 
+                    isOpen={true}
+                    onClose={closeModal}
                 />
             )}
 

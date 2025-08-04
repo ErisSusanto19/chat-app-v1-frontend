@@ -29,3 +29,12 @@ export const deleteContact = async (id) => {
     const response = await axiosInstance.delete(`/contacts/${id}`)
     return response.data
 }
+
+export const getAllContactsForSelect = async (searchQuery = '') => {
+    const response = await axiosInstance.get('/contacts/select-options', {
+        params: {
+            search: searchQuery
+        }
+    })
+    return response.data
+}

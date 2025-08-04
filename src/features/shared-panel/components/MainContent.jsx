@@ -1,5 +1,5 @@
 import React from 'react';
-import ChatWindow from '@/features/messages/components/ChatWindow';
+import ChatWindow from '@/features/conversations/components/ChatWindow';
 import ContactDetailContainer from '../../contacts/components/ContactDetailContainer';
 import ProfileContainer from '../../profile/components/ProfileContainer';
 

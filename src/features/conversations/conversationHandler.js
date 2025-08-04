@@ -38,12 +38,12 @@ export const handleAddConversation = (builder, { addConversation }) => {
         })
         .addCase(addConversation.fulfilled, (state, action) => {
             state.loading = false;
-            const newConversation = action.payload.data;
+            // const newConversation = action.payload.data;
             
-            const existingIndex = state.items.findIndex(item => item._id === newConversation._id);
-            if (existingIndex === -1) {
-                state.items.unshift(newConversation);
-            }
+            // const existingIndex = state.items.findIndex(item => item._id === newConversation._id);
+            // if (existingIndex === -1) {
+            //     state.items.unshift(newConversation);
+            // }
         })
         .addCase(addConversation.rejected, (state, action) => {
             state.loading = false;
