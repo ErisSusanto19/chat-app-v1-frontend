@@ -30,7 +30,7 @@ export const addParticipants = async ({ conversationId, data }) => {
     return response.data;
 };
 
-// export const sendMessage = async ({ conversationId, messageData }) => {
-//     const response = await axiosInstance.post(`/conversations/${conversationId}/messages`, messageData);
-//     return response.data;
-// };
+export const sendMessage = async ({ conversationId, messageData }) => {
+    const response = await axiosInstance.post(`/conversations/${conversationId}/messages`, messageData);
+    return response.data;
+};

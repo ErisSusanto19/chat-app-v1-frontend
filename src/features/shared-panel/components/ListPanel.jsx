@@ -39,7 +39,10 @@ const ListPanel = ({
                 </div>
 
                 {activeMenu === 'conversations' && (
-                    <ConversationList onConversationSelect={(id) => onItemSelected('conversation', id)} />
+                    <ConversationList  
+                        onConversationSelect={(id) => onItemSelected('conversation', id)}
+                        selectedId={selectedId}
+                    />
                 )}
                 {activeMenu === 'contacts' && (
                     <ContactList 

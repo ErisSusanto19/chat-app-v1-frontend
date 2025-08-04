@@ -96,3 +96,96 @@ export const handleDeleteConversation = (builder, { deleteConversation }) => {
             state.error = action.payload;
         });
 };
+
+// export const handleSendMessage = (builder, { sendMessage }) => {
+//     builder
+//         .addCase(sendMessage.pending, (state, action) => {
+//             state.loading = true
+//             state.error = null
+//         })
+//         .addCase(sendMessage.fulfilled, (state, action) => {
+//             const newMessage = action.payload;
+
+//             if (state.currentConversation && state.currentConversation._id === newMessage.conversationId) {
+//                 state.currentConversation.messages.push(newMessage);
+//             }
+
+//             const conversationIndex = state.items.findIndex(item => item.conversationId === newMessage.conversationId);
+//             if (conversationIndex !== -1) {
+//                 state.items[conversationIndex].lastMessage = {
+//                     _id: newMessage._id,
+//                     content: newMessage.content,
+//                     senderId: newMessage.senderId,
+//                     createdAt: newMessage.createdAt,
+//                     status: newMessage.status
+//                 };
+                
+//                 const updatedConversation = state.items.splice(conversationIndex, 1)[0];
+//                 state.items.unshift(updatedConversation);
+//             }
+//         })
+//         .addCase(sendMessage.rejected, (state, action) => {
+//             state.loading = false
+//             state.error = action.payload
+//         });
+// };
+
+export const handleSendMessage = (builder, { sendMessage }) => {
+    builder
+        .addCase(sendMessage.pending, (state, action) => {
+            
+            const { conversationId, messageData } = action.meta.arg;
+
+            if (state.currentConversation && state.currentConversation._id === conversationId) {
+                
+                const optimisticMessage = {
+                    _id: `temp_${Date.now()}`,
+                    conversationId: conversationId,
+                    senderId: state.currentConversation.participant.find(p => p.toString() !== state.currentConversation.partnerDetails._id.toString()), // Dapatkan ID pengguna saat ini dari state.auth
+                    content: messageData.content,
+                    status: 'sending...',
+                    createdAt: new Date().toISOString(),
+                    isOptimistic: true
+                };
+
+                state.currentConversation.messages.push(optimisticMessage);
+            }
+        })
+        .addCase(sendMessage.fulfilled, (state, action) => {
+            const finalMessage = action.payload;
+
+            if (state.currentConversation) {
+                const optimisticMessageIndex = state.currentConversation.messages.findIndex(
+                    msg => msg.isOptimistic && msg.conversationId === finalMessage.conversationId
+                );
+                
+                if (optimisticMessageIndex !== -1) {
+                    state.currentConversation.messages[optimisticMessageIndex] = finalMessage;
+                } else {
+                    state.currentConversation.messages.push(finalMessage);
+                }
+            }
+
+            const conversationIndex = state.items.findIndex(item => item.conversationId === finalMessage.conversationId);
+            if (conversationIndex !== -1) {
+                state.items[conversationIndex].lastMessage = {
+                    _id: finalMessage._id,
+                    content: finalMessage.content,
+                    senderId: finalMessage.senderId,
+                    createdAt: finalMessage.createdAt,
+                    status: finalMessage.status
+                };
+                const updatedConversation = state.items.splice(conversationIndex, 1)[0];
+                state.items.unshift(updatedConversation);
+            }
+        })
+        .addCase(sendMessage.rejected, (state, action) => {
+            const { conversationId } = action.meta.arg;
+            if (state.currentConversation) {
+                state.currentConversation.messages = state.currentConversation.messages.filter(
+                    msg => !msg.isOptimistic
+                );
+            }
+            state.error = action.payload;
+        });
+};

@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
 import IconButton from '@/shared/ui/IconButton';
-import { Send } from 'lucide-react';
-import { Paperclip, Smile } from 'lucide-react';
+import { Send, Paperclip, Smile } from 'lucide-react';
+import { useDispatch } from 'react-redux';
+import { sendMessage } from '../conversationThunk'
 
-const MessageInput = () => {
+const MessageInput = ({ conversationId }) => {
     const [text, setText] = useState('');
+    const dispatch = useDispatch()
 
     const handleSubmit = (e) => {
         e.preventDefault();
         if (text.trim() === '') return;
 
-        console.log('Sending message:', text);
-        // dispatch(sendMessage({ text }));
+        const messageData = {
+            type: 'text',
+            message: text,
+            url: null
+        };
+
+        dispatch(sendMessage({ conversationId, messageData }));
+
         setText('');
     };
 

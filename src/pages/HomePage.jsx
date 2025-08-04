@@ -122,7 +122,7 @@ const HomePage = () => {
                 <ContactFormModal 
                     isOpen={true}
                     onClose={closeModal} 
-                    onSuccess={handleContactAddedSuccess} // Teruskan fungsi sukses
+                    onSuccess={handleContactAddedSuccess}
                 />
             )}
 

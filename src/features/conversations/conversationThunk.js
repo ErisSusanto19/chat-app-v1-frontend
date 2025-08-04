@@ -78,3 +78,16 @@ export const addParticipantsToGroup = createAsyncThunk(
         }
     }
 );
+
+export const sendMessage = createAsyncThunk(
+    'conversations/sendMessage',
+    async ({ conversationId, messageData }, { rejectWithValue }) => {
+        try {
+            const response = await conversationApi.sendMessage({ conversationId, messageData });
+            return response;
+        } catch (error) {
+            const message = error.response?.data?.message || error.message;
+            return rejectWithValue(message);
+        }
+    }
+);
