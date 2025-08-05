@@ -1,21 +1,25 @@
 import React, { useState } from 'react';
 import IconButton from '@/shared/ui/IconButton';
 import { Send, Paperclip, Smile } from 'lucide-react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { sendMessage } from '../conversationThunk'
 
 const MessageInput = ({ conversationId }) => {
     const [text, setText] = useState('');
     const dispatch = useDispatch()
+    const { user: currentUser } = useSelector(state => state.auth)
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (text.trim() === '') return;
+        if (text.trim() === '' || !currentUser?._id) return;
 
         const messageData = {
-            type: 'text',
-            message: text,
-            url: null
+            senderId: currentUser._id,
+            content: {
+                type: 'text',
+                message: text,
+                url: null
+            }
         };
 
         dispatch(sendMessage({ conversationId, messageData }));

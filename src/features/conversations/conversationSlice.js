@@ -4,14 +4,22 @@ import {
     fetchConversationById,
     addConversation,
     updateConversation,
-    deleteConversation
+    deleteConversation,
+    sendMessage,
+    editMessage,
+    deleteMessageForMe,
+    deleteMessageForAll
 } from './conversationThunk';
 import { 
     handleFetchConversations,
     handleFetchConversationById,
     handleAddConversation,
     handleUpdateConversation,
-    handleDeleteConversation
+    handleDeleteConversation,
+    handleSendMessage,
+    handleEditMessage,
+    handleDeleteMessageForMe,
+    handleDeleteMessageForAll
 } from './conversationHandler';
 
 const initialState = {
@@ -43,6 +51,10 @@ const conversationSlice = createSlice({
         handleAddConversation(builder, { addConversation });
         handleUpdateConversation(builder, { updateConversation });
         handleDeleteConversation(builder, { deleteConversation });
+        handleSendMessage(builder, { sendMessage });
+        handleEditMessage(builder, { editMessage });
+        handleDeleteMessageForMe(builder, { deleteMessageForMe });
+        handleDeleteMessageForAll(builder, { deleteMessageForAll });
     }
 });
 

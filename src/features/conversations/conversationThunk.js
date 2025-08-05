@@ -91,3 +91,42 @@ export const sendMessage = createAsyncThunk(
         }
     }
 );
+
+export const editMessage = createAsyncThunk(
+    'conversations/editMessage',
+    async ({ conversationId, messageId, data }, { rejectWithValue }) => {
+        try {
+            const response = await conversationApi.editMessage({ conversationId, messageId, data });
+            return response;
+        } catch (error) {
+            const message = error.response?.data?.message || error.message;
+            return rejectWithValue(message);
+        }
+    }
+);
+
+export const deleteMessageForMe = createAsyncThunk(
+    'conversations/deleteMessageForMe',
+    async ({ conversationId, messageId }, { rejectWithValue }) => {
+        try {
+            const response = await conversationApi.deleteMessageForMe({ conversationId, messageId });
+            return response;
+        } catch (error) {
+            const message = error.response?.data?.message || error.message;
+            return rejectWithValue(message);
+        }
+    }
+);
+
+export const deleteMessageForAll = createAsyncThunk(
+    'conversations/deleteMessageForAll',
+    async ({ conversationId, messageId }, { rejectWithValue }) => {
+        try {
+            const response = await conversationApi.deleteMessageForAll({ conversationId, messageId });
+            return response;
+        } catch (error) {
+            const message = error.response?.data?.message || error.message;
+            return rejectWithValue(message);
+        }
+    }
+);
