@@ -100,49 +100,74 @@ export const handleDeleteConversation = (builder, { deleteConversation }) => {
 export const handleSendMessage = (builder, { sendMessage }) => {
     builder
         .addCase(sendMessage.pending, (state, action) => {
-            const { conversationId, messageData } = action.meta.arg;
+            // const { conversationId, messageData } = action.meta.arg;
             
-            if (state.currentConversation && state.currentConversation._id === conversationId) {
-                const optimisticMessage = {
-                    _id: `temp_${Date.now()}`,
-                    conversationId: conversationId,
-                    senderId: messageData.senderId,
-                    content: messageData.content,
-                    status: 'sending',
-                    createdAt: new Date().toISOString(),
-                    isOptimistic: true
-                };
+            // if (state.currentConversation && state.currentConversation._id === conversationId) {
+            //     const optimisticMessage = {
+            //         _id: `temp_${Date.now()}`,
+            //         conversationId: conversationId,
+            //         senderId: messageData.senderId,
+            //         content: messageData.content,
+            //         status: 'sending',
+            //         createdAt: new Date().toISOString(),
+            //         isOptimistic: true
+            //     };
                 
-                state.currentConversation.messages.push(optimisticMessage);
-            }
+            //     state.currentConversation.messages.push(optimisticMessage);
+            // }
         })
         .addCase(sendMessage.fulfilled, (state, action) => {
             const finalMessage = action.payload;
 
-            if (state.currentConversation) {
-                const optimisticMessageIndex = state.currentConversation.messages.findIndex(
-                    msg => msg.isOptimistic === true
-                );
+            // if (state.currentConversation) {
+            //     const optimisticMessageIndex = state.currentConversation.messages.findIndex(
+            //         msg => msg.isOptimistic === true
+            //     );
                 
-                if (optimisticMessageIndex !== -1) {
-                    state.currentConversation.messages[optimisticMessageIndex] = finalMessage;
-                } else {
-                    state.currentConversation.messages.push(finalMessage);
-                }
+            //     if (optimisticMessageIndex !== -1) {
+            //         state.currentConversation.messages[optimisticMessageIndex] = finalMessage;
+            //     } else {
+            //         state.currentConversation.messages.push(finalMessage);
+            //     }
+            // }
+
+            const conversationIndex = state.items.findIndex(item => item.conversationId === finalMessage.conversationId);
+            if (conversationIndex !== -1) {
+                const newItems = [...state.items];
+
+                const conversationToUpdate = newItems[conversationIndex];
+
+                const updatedConversationItem = {
+                    ...conversationToUpdate,
+
+                    lastMessage: {
+                        _id: finalMessage._id,
+                        content: finalMessage.content,
+                        senderId: finalMessage.senderId,
+                        createdAt: finalMessage.createdAt,
+                        status: finalMessage.status
+                    }
+                };
+
+                newItems.splice(conversationIndex, 1);
+
+                newItems.unshift(updatedConversationItem);
+
+                state.items = newItems;
             }
 
         })
         .addCase(sendMessage.rejected, (state, action) => {
-            const { messageData } = action.meta.arg;
-            if (state.currentConversation) {
-                const optimisticMessageIndex = state.currentConversation.messages.findIndex(
-                    msg => msg.isOptimistic === true && msg.content.message === messageData.content.message
-                );
-                if (optimisticMessageIndex !== -1) {
-                    state.currentConversation.messages[optimisticMessageIndex].status = 'failed';
-                    state.currentConversation.messages[optimisticMessageIndex].isOptimistic = false; // Hapus flag optimis
-                }
-            }
+            // const { messageData } = action.meta.arg;
+            // if (state.currentConversation) {
+            //     const optimisticMessageIndex = state.currentConversation.messages.findIndex(
+            //         msg => msg.isOptimistic === true && msg.content.message === messageData.content.message
+            //     );
+            //     if (optimisticMessageIndex !== -1) {
+            //         state.currentConversation.messages[optimisticMessageIndex].status = 'failed';
+            //         state.currentConversation.messages[optimisticMessageIndex].isOptimistic = false; // Hapus flag optimis
+            //     }
+            // }
             state.error = action.payload;
         });
 };

@@ -3,12 +3,18 @@ import Avatar from '@/shared/ui/Avatar';
 import IconButton from '@/shared/ui/IconButton';
 import { Search, EllipsisVertical, ArrowLeft } from 'lucide-react';
 
-const ChatHeader = ({ onBack, conversation }) => {
+const ChatHeader = ({ onBack, conversation, typingUsers }) => {
 
     const displayName = conversation.name;
     const displayImage = conversation.partnerDetails?.image;
 
     const lastSeen = 'online';
+
+    const getTypingText = () => {
+        if (typingUsers.length === 0) return conversation.isGroup ? 'Group members' : 'online';
+        if (typingUsers.length === 1) return `${typingUsers[0].name} is typing...`;
+        return `${typingUsers.length} people are typing...`;
+    }
 
     return (
         <header className="flex h-16 items-center w-full justify-between px-4 border-b border-gray-200 bg-gray-100">
@@ -23,7 +29,8 @@ const ChatHeader = ({ onBack, conversation }) => {
                 />
                 <div className="flex flex-col">
                     <span className="font-semibold text-gray-800">{displayName}</span>
-                    <span className="text-xs text-gray-500">{lastSeen}</span>
+                    {/* <span className="text-xs text-gray-500">{lastSeen}</span> */}
+                    <span className="text-xs text-green-500 animate-pulse">{getTypingText()}</span>
                 </div>
             </div>
             <div className="flex items-center gap-2">

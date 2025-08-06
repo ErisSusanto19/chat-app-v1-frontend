@@ -7,6 +7,9 @@ import ProfileModal from '../features/profile/components/ProfileModal';
 import NewConversationModal from '../features/conversations/components/NewConversationModal';
 import { SquarePen, ListFilter, UserPlus } from 'lucide-react';
 import useDebounce from '@/hooks/useDebounce';
+import { socket } from '../lib/socket';
+import { useDispatch, useSelector } from 'react-redux';
+import { receiveNewMessage, updateConversationInList } from '../features/conversations/conversationSlice';
 
 const MENU_CONFIG = {
     conversations: {
@@ -22,6 +25,49 @@ const MENU_CONFIG = {
 };
 
 const HomePage = () => {
+    const dispatch = useDispatch()
+    const { user, isAuthenticated } = useSelector(state => state.auth)
+
+    useEffect(() => {
+        if (!isAuthenticated || !user) {
+            return;
+        }
+
+        socket.auth = { userId: user._id, userName: user.name };
+        socket.connect();
+
+        const handleConnect = () => {
+            console.log('Socket Terhubung! ID:', socket.id);
+        };
+
+        const handleDisconnect = () => {
+            console.log('Socket Terputus!');
+        };
+
+        const handleReceiveMessage = (newMessage) => {
+            dispatch(receiveNewMessage(newMessage));
+        };
+
+        const handleConversationUpdate = (updateData) => {
+            console.log("HomePage received a conversation update:", updateData);
+            dispatch(updateConversationInList(updateData));
+        };
+        
+        socket.on('connect', handleConnect);
+        socket.on('disconnect', handleDisconnect);
+        socket.on('receive_message', handleReceiveMessage);
+        socket.on('conversation_updated', handleConversationUpdate);
+
+        return () => {
+            socket.off('connect', handleConnect);
+            socket.off('disconnect', handleDisconnect);
+            socket.off('receive_message', handleReceiveMessage);
+            socket.off('conversation_updated', handleConversationUpdate);
+
+            socket.disconnect();
+        };
+        
+    }, [isAuthenticated, user, dispatch]);
 
     const [isExpanded, setIsExpanded] = useState(false);
     const [activeMenu, setActiveMenu] = useState('conversations');

@@ -14,7 +14,7 @@ const ListPanel = ({
     selectedId,
     searchTerm,
     onSearchChange,
-    debouncedSearchTerm
+    debouncedSearchTerm,
 }) => {
 
     return (

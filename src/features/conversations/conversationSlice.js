@@ -42,6 +42,29 @@ const conversationSlice = createSlice({
             if (state.currentConversation && state.currentConversation._id === newMessage.conversationId) {
                 state.currentConversation.messages.push(newMessage);
             }
+        },
+
+        updateConversationInList: (state, action) => {
+            const { conversationId, lastMessage } = action.payload;
+
+            const indexToUpdate = state.items.findIndex(
+                item => item.conversationId.toString() === conversationId.toString()
+            );
+
+            if (indexToUpdate !== -1) {
+                const itemToUpdate = state.items[indexToUpdate];
+                const updatedItem = {
+                    ...itemToUpdate,
+                    lastMessage: lastMessage
+                };
+                
+                const newItems = state.items.filter(
+                    item => item.conversationId.toString() !== conversationId.toString()
+                );
+                newItems.unshift(updatedItem);
+                
+                state.items = newItems;
+            }
         }
     },
 
@@ -58,6 +81,6 @@ const conversationSlice = createSlice({
     }
 });
 
-export const { clearCurrentConversation, receiveNewMessage } = conversationSlice.actions;
+export const { clearCurrentConversation, receiveNewMessage, updateConversationInList } = conversationSlice.actions;
 
 export default conversationSlice.reducer;

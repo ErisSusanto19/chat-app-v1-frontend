@@ -2,17 +2,53 @@ import React from 'react';
 import Avatar from '@/shared/ui/Avatar';
 import clsx from 'clsx';
 import { format } from 'date-fns';
+import { File as FileIcon, Image as ImageIcon } from 'lucide-react'
 
 const ConversationItem = ({ conversation, onSelect, isSelected }) => {
     const displayName = conversation.name;
     const displayImage = conversation.image;
-    const lastMessageText = conversation.lastMessage?.content?.message || 'No messages yet.';
     
     const lastMessageTimestamp = conversation.lastMessage?.createdAt;
     let displayTime = '';
     if (lastMessageTimestamp) {
         displayTime = format(new Date(lastMessageTimestamp), 'p');
     }
+
+    const renderLastMessage = () => {
+        const lastMsg = conversation.lastMessage;
+
+        if (!lastMsg) {
+            return <span className="italic text-gray-500">No messages yet.</span>;
+        }
+
+        const msgType = lastMsg.content?.type;
+        const msgText = lastMsg.content?.message;
+        const fileName = lastMsg.content?.metadata?.fileName; // Jika Anda sudah menambahkan metadata
+
+        if (msgType === 'image') {
+            return (
+                <div className="flex items-center gap-1 text-gray-500">
+                    <ImageIcon size={16} />
+                    <span>{msgText || 'Image'}</span> {/* Menampilkan caption atau 'Image' */}
+                </div>
+            );
+        }
+
+        if (msgType === 'file') {
+            return (
+                <div className="flex items-center gap-1 text-gray-500">
+                    <FileIcon size={16} />
+                    <span>{fileName || msgText || 'File'}</span> {/* Menampilkan nama file atau 'File' */}
+                </div>
+            );
+        }
+        
+        if (msgType === 'notification') {
+             return <span className="italic text-gray-500">{msgText}</span>
+        }
+
+        return msgText;
+    };
 
     return (
         <div 
@@ -31,7 +67,7 @@ const ConversationItem = ({ conversation, onSelect, isSelected }) => {
                     <p className="font-semibold text-gray-800 truncate">{displayName}</p>
                     <p className="text-xs text-gray-500 flex-shrink-0 ml-2">{displayTime}</p>
                 </div>
-                <p className="text-sm text-gray-600 truncate">{lastMessageText}</p>
+                <div className="text-sm text-gray-600 truncate">{renderLastMessage()}</div>
             </div>
         </div>
     );

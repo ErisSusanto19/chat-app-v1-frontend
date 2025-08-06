@@ -1,15 +1,20 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { clearCurrentConversation } from '../conversationSlice';
+import { clearCurrentConversation, receiveNewMessage } from '../conversationSlice';
 import { fetchConversationById } from '../conversationThunk'
 import ChatHeader from './ChatHeader';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import PageLoader from '@/shared/ui/PageLoader';
+import { socket } from '@/lib/socket';
 
 const ChatWindow = ({ conversationId, onBack }) => {
     const dispatch = useDispatch();
     const { currentConversation, loading } = useSelector(state => state.conversations);
+
+    const [typingUsers, setTypingUsers] = useState([]);
+
+    const [editingMessageId, setEditingMessageId] = useState(null);
 
     useEffect(() => {
         if (conversationId) {
@@ -21,15 +26,58 @@ const ChatWindow = ({ conversationId, onBack }) => {
         };
     }, [conversationId, dispatch]);
 
+    useEffect(() => {
+        if (conversationId) {
+            console.log(`[EMITTING] Trying to join room: ${conversationId}`);
+            socket.emit('join_conversation', conversationId);
+
+            return () => {
+                socket.emit('leave_conversation', conversationId);
+            };
+        }
+    }, [conversationId]);
+
+     useEffect(() => {
+        const handleUserIsTyping = ({ conversationId: incomingConvId, user }) => {
+            if (conversationId === incomingConvId) {
+                setTypingUsers(prev => prev.find(u => u.id === user.id) ? prev : [...prev, user]);
+            }
+        };
+
+        const handleUserStoppedTyping = ({ conversationId: incomingConvId, user }) => {
+            if (conversationId === incomingConvId) {
+                setTypingUsers(prev => prev.filter(u => u.id !== user.id));
+            }
+        };
+
+        socket.on('user_is_typing', handleUserIsTyping);
+        socket.on('user_stopped_typing', handleUserStoppedTyping);
+
+        return () => {
+            socket.off('user_is_typing', handleUserIsTyping);
+            socket.off('user_stopped_typing', handleUserStoppedTyping);
+        };
+    }, [conversationId]);
+
     if (loading || !currentConversation) {
         return <PageLoader message="Loading conversation..." />;
     }
 
     return (
         <div className="flex flex-col w-full bg-gray-50 h-screen">
-            <ChatHeader onBack={onBack} conversation={currentConversation} />
-            <MessageList messages={currentConversation.messages} />
-            <MessageInput conversationId={currentConversation._id}/>
+            <ChatHeader 
+                onBack={onBack} 
+                conversation={currentConversation}
+                typingUsers={typingUsers}
+            />
+            <MessageList 
+                messages={currentConversation.messages}
+                editingMessageId={editingMessageId}
+                setEditingMessageId={setEditingMessageId}
+            />
+            {!editingMessageId && (
+                <MessageInput conversationId={currentConversation._id} />
+            )}
         </div>
     );
 };

@@ -18,8 +18,8 @@ const ConversationList = ({ onConversationSelect, selectedId }) => {
     return (
         <div className="flex-1 overflow-y-auto">
             {conversations.map(convo => (
-                <ConversationItem 
-                    key={convo.conversationId}
+                <ConversationItem
+                    key={convo._id}
                     conversation={convo}
                     onSelect={() => onConversationSelect(convo.conversationId)}
                     isSelected={convo.conversationId === selectedId}

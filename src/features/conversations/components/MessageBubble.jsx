@@ -1,14 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { format } from 'date-fns'
-import { Clock, AlertCircle, Trash2, Edit, MoreVertical, X, Check } from 'lucide-react';
+import { Clock, AlertCircle, Trash2, Edit, MoreVertical, X, Check, File } from 'lucide-react';
 import DropdownMenu, { DropdownMenuItem } from '@/shared/ui/DropdownMenu';
 
-const MessageBubble = ({ message, isOwnMessage, onDeleteForMe, onEdit, onDeleteForAll }) => {
+const MessageBubble = ({ message, isOwnMessage, onDeleteForMe, onEdit, onDeleteForAll, isEditing, onStartEdit, onCancelEdit, }) => {
 
     const [isHovering, setIsHovering] = useState(false);
 
-    const [isEditing, setIsEditing] = useState(false);
     const [editText, setEditText] = useState(message.content.message);
     const textareaRef = useRef(null);
 
@@ -20,10 +19,8 @@ const MessageBubble = ({ message, isOwnMessage, onDeleteForMe, onEdit, onDeleteF
     }, [isEditing]);
 
     const handleSave = () => {
-        if (editText.trim() && editText !== message.content.message) {
-            onEdit(message._id, editText);
-        }
-        setIsEditing(false);
+        onEdit(message._id, editText);
+        onCancelEdit(); 
     };
     
     const bubbleClasses = clsx(
@@ -38,7 +35,8 @@ const MessageBubble = ({ message, isOwnMessage, onDeleteForMe, onEdit, onDeleteF
         isOwnMessage? 'justify-end' : 'justify-start'
     );
 
-    const messageText = message.content?.message || '';
+    const { type, url, message: messageText, metadata } = message.content
+    const fileName = metadata?.fileName || 'File';
     const timestamp = message.createdAt;
 
     let displayTime = '';
@@ -71,22 +69,50 @@ const MessageBubble = ({ message, isOwnMessage, onDeleteForMe, onEdit, onDeleteF
                         className="w-full h-20 p-2 my-2 bg-white border rounded text-gray-900"
                     />
                     <div className="flex justify-end gap-2">
-                        <button onClick={() => setIsEditing(false)} className="p-2 rounded-full hover:bg-gray-200"><X size={20}/></button>
+                        <button onClick={onCancelEdit} className="p-2 rounded-full hover:bg-gray-200"><X size={20}/></button>
                         <button onClick={handleSave} className="p-2 rounded-full bg-amber-500 text-white hover:bg-amber-600"><Check size={20}/></button>
                     </div>
                 </div>
             ) : (
                 <>
                     <div className={bubbleClasses}>
+
+                        {type === 'image' && url && (
+                            <div className="mb-2">
+                                <img 
+                                    src={url} 
+                                    alt={messageText || metadata?.fileName || 'Image'}
+                                    className="rounded-lg max-w-xs cursor-pointer"
+                                />
+                            </div>
+                        )}
+
+                        {type === 'file' && url && (
+                            <a 
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                download
+                                className="flex items-center gap-2 p-2 bg-gray-100 rounded-lg hover:bg-gray-200 mb-2 text-gray-800"
+                            >
+                                <File size={24} className="text-gray-600 flex-shrink-0" />
+                                <span className="text-blue-600 font-semibold underline truncate text-sm">
+                                    {metadata?.fileName || 'Download File'}
+                                </span>
+                            </a>
+                        )}
+
+                        {(type === 'text' || (type !== 'text' && messageText)) && (
+                            <p className="text-sm" style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                                {messageText}
+                            </p>
+                        )}
+
                         {message.isEdited && (
                             <p className={clsx("text-xs mb-1", isOwnMessage ? 'text-amber-200' : 'text-gray-400')}>
                                 edited
                             </p>
                         )}
-
-                        <p className="text-sm" style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-                            {messageText}
-                        </p>
 
                         <div className="flex items-center justify-end gap-1 mt-1">
                             <p className={clsx("text-xs", isOwnMessage ? 'text-amber-200' : 'text-gray-400')}>
@@ -107,7 +133,7 @@ const MessageBubble = ({ message, isOwnMessage, onDeleteForMe, onEdit, onDeleteF
                     )}>
                         <DropdownMenu>
                             {message.content?.type === 'text' && isWithinTimeLimit && (
-                                <DropdownMenuItem onClick={() => setIsEditing(true)}>
+                                <DropdownMenuItem onClick={onStartEdit}>
                                     <Edit size={16} /> Edit
                                 </DropdownMenuItem>
                             )}
@@ -115,7 +141,7 @@ const MessageBubble = ({ message, isOwnMessage, onDeleteForMe, onEdit, onDeleteF
                             <DropdownMenuItem onClick={() => onDeleteForMe(message._id)}>
                                 <Trash2 size={16} /> Delete for Me
                             </DropdownMenuItem>
-                            
+
                             {isWithinTimeLimit && (
                                 <DropdownMenuItem onClick={() => onDeleteForAll(message._id)} className="text-red-600">
                                     <Trash2 size={16} /> Delete for Everyone

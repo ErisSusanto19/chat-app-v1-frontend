@@ -3,9 +3,8 @@ import MessageBubble from './MessageBubble';
 import { useSelector, useDispatch } from 'react-redux';
 import { deleteMessageForMe, deleteMessageForAll, editMessage } from '../conversationThunk';
 import ConfirmationModal from '@/shared/ui/ConfirmationModal'
-import toast from 'react-hot-toast';
 
-const MessageList = ({messages = []}) => {
+const MessageList = ({messages = [], editingMessageId, setEditingMessageId}) => {
     const dispatch = useDispatch()
     const endOfMessagesRef = useRef(null);
     const { user: currentUser } = useSelector(state => state.auth);
@@ -75,6 +74,9 @@ const MessageList = ({messages = []}) => {
                         message={msg}
                         isOwnMessage={msg.senderId === currentUser?._id}
                         onEdit={handleSaveEdit}
+                        isEditing={msg._id === editingMessageId}
+                        onStartEdit={() => setEditingMessageId(msg._id)}
+                        onCancelEdit={() => setEditingMessageId(null)}
                         onDeleteForMe={handleDeleteForMe}
                         onDeleteForAll={handleDeleteForAll}
                     />

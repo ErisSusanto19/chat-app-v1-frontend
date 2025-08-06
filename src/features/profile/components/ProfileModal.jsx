@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 import Button from '@/shared/ui/Button'
 import { Edit } from 'lucide-react'
 import ConfirmationModal from '@/shared/ui/ConfirmationModal';
-import apiClient from '@/services/axiosInstance';
+import axiosInstance from '@/services/axiosInstance';
 
 const ProfileModal = ({ isOpen, onClose }) => {
     const dispatch = useDispatch();
@@ -31,7 +31,7 @@ const ProfileModal = ({ isOpen, onClose }) => {
 
             if (formData.image instanceof File) {
                 toast.loading('Preparing image upload...');
-                const signatureResponse = await apiClient.get('/cloudinary-signature');
+                const signatureResponse = await axiosInstance.get('/utilities/cloudinary-signature');
                 const { timestamp, signature } = signatureResponse.data;
 
                 const uploadFormData = new FormData();
