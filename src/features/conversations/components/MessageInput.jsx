@@ -61,7 +61,9 @@ const MessageInput = ({ conversationId }) => {
 
                 try {
                     
-                    const sigResponse = await axiosIntance.get('utilities/cloudinary-signature')
+                    const sigResponse = await axiosIntance.get('utilities/cloudinary-signature', {
+                        params: { folder: 'chat_media' }
+                    })
                     const { timestamp, signature } = sigResponse.data
     
                     const formData = new FormData();

@@ -31,7 +31,9 @@ const ProfileModal = ({ isOpen, onClose }) => {
 
             if (formData.image instanceof File) {
                 toast.loading('Preparing image upload...');
-                const signatureResponse = await axiosInstance.get('/utilities/cloudinary-signature');
+                const signatureResponse = await axiosInstance.get('/utilities/cloudinary-signature', {
+                    params: { folder: 'profile_pictures' }
+                });
                 const { timestamp, signature } = signatureResponse.data;
 
                 const uploadFormData = new FormData();
@@ -39,6 +41,7 @@ const ProfileModal = ({ isOpen, onClose }) => {
                 uploadFormData.append('api_key', import.meta.env.VITE_CLOUDINARY_API_KEY);
                 uploadFormData.append('timestamp', timestamp);
                 uploadFormData.append('signature', signature);
+                uploadFormData.append('folder', 'profile_pictures');
                 
                 toast.dismiss();
                 toast.loading('Uploading image...');

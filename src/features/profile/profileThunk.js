@@ -19,6 +19,7 @@ export const editProfile = createAsyncThunk(
     async(data, { rejectWithValue }) => {
         try {
             const response = await profile.updateProfile(data)
+            localStorage.setItem('user', JSON.stringify(response));
             return response
         } catch (error) {
             const errorMessage = error.response?.data?.message || error.message || 'Update profile faield.'

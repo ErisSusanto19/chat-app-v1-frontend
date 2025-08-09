@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import { getAllContactsForSelect } from '../../contacts/contactApi'
 import AsyncSelect from 'react-select/async';
 
-const NewConversationModal = ({ isOpen, onClose }) => {
+const NewConversationModal = ({ isOpen, onClose, onConversationCreated }) => {
     const dispatch = useDispatch();
 
     const { loading: conversationLoading } = useSelector(state => state.conversations);
@@ -47,9 +47,14 @@ const NewConversationModal = ({ isOpen, onClose }) => {
         if (addConversation.fulfilled.match(resultAction)) {
             const newConversation = resultAction.payload.data;
             toast.success(resultAction.payload.message || 'Conversation started!');
-            dispatch(fetchConversations());
-            onClose();
-            // navigate(`/conversations/${newConversation._id}`);
+
+            await dispatch(fetchConversations());
+
+            if (onConversationCreated) {
+                onConversationCreated(newConversation.conversationId);
+            } else {
+                onClose();
+            }
         } else {
             toast.error(resultAction.payload || 'Failed to start conversation.');
         }

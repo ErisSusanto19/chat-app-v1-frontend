@@ -9,7 +9,7 @@ import { SquarePen, ListFilter, UserPlus } from 'lucide-react';
 import useDebounce from '@/hooks/useDebounce';
 import { socket } from '../lib/socket';
 import { useDispatch, useSelector } from 'react-redux';
-import { receiveNewMessage, updateConversationInList } from '../features/conversations/conversationSlice';
+import { receiveNewMessage, updateConversationInList, addNewConversationToList } from '../features/conversations/conversationSlice';
 
 const MENU_CONFIG = {
     conversations: {
@@ -53,17 +53,24 @@ const HomePage = () => {
             dispatch(updateConversationInList(updateData));
         };
         
+        const handleNewConversation = (newConversationData) => {
+            console.log("Received a new conversation!", newConversationData);
+            dispatch(addNewConversationToList(newConversationData));
+        };
+
         socket.on('connect', handleConnect);
         socket.on('disconnect', handleDisconnect);
         socket.on('receive_message', handleReceiveMessage);
         socket.on('conversation_updated', handleConversationUpdate);
-
+        socket.on('new_conversation_received', handleNewConversation);
+        
         return () => {
             socket.off('connect', handleConnect);
             socket.off('disconnect', handleDisconnect);
             socket.off('receive_message', handleReceiveMessage);
             socket.off('conversation_updated', handleConversationUpdate);
-
+            socket.off('new_conversation_received', handleNewConversation);
+            
             socket.disconnect();
         };
         
@@ -86,6 +93,12 @@ const HomePage = () => {
 
     const handleContactAddedSuccess = () => {
         setSearchTerm('');
+    };
+
+    const handleConversationCreated = (newConversationId) => {
+        setActiveMenu('conversations');
+        setSelectedId(newConversationId);
+        closeModal();
     };
 
     const headerActions = useMemo(() => {
@@ -176,6 +189,7 @@ const HomePage = () => {
                 <NewConversationModal 
                     isOpen={true}
                     onClose={closeModal}
+                    onConversationCreated={handleConversationCreated}
                 />
             )}
 

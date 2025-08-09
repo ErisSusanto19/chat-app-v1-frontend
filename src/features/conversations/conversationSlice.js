@@ -65,6 +65,14 @@ const conversationSlice = createSlice({
                 
                 state.items = newItems;
             }
+        },
+
+        addNewConversationToList: (state, action) => {
+            const newConversation = action.payload;
+            const exists = state.items.some(item => item.conversationId === newConversation.conversationId);
+            if (!exists) {
+                state.items.unshift(newConversation);
+            }
         }
     },
 
@@ -81,6 +89,6 @@ const conversationSlice = createSlice({
     }
 });
 
-export const { clearCurrentConversation, receiveNewMessage, updateConversationInList } = conversationSlice.actions;
+export const { clearCurrentConversation, receiveNewMessage, updateConversationInList, addNewConversationToList } = conversationSlice.actions;
 
 export default conversationSlice.reducer;

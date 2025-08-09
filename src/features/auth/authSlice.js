@@ -35,7 +35,6 @@ const authSlice = createSlice({
         builder.addCase(editProfile.fulfilled, (state, action) => {
             if (state.user) {
                 state.user = { ...state.user, ...action.payload };
-                localStorage.setItem('user', JSON.stringify(state.user));
             }
         });
     }
