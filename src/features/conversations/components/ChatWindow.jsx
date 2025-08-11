@@ -11,9 +11,9 @@ import { socket } from '@/lib/socket';
 const ChatWindow = ({ conversationId, onBack }) => {
     const dispatch = useDispatch();
     const { currentConversation, loading } = useSelector(state => state.conversations);
+    const { user: currentUser } = useSelector(state => state.auth);
 
     const [typingUsers, setTypingUsers] = useState([]);
-
     const [editingMessageId, setEditingMessageId] = useState(null);
 
     useEffect(() => {
@@ -36,6 +36,18 @@ const ChatWindow = ({ conversationId, onBack }) => {
             };
         }
     }, [conversationId]);
+
+    useEffect(() => {
+        if (currentConversation && currentUser) {
+            const hasUnreadMessages = currentConversation.messages.some(
+                msg => msg.status !== 'read' && msg.senderId !== currentUser._id
+            );
+
+            if (hasUnreadMessages) {
+                socket.emit('mark_messages_as_read', { conversationId });
+            }
+        }
+    }, [currentConversation, currentUser, conversationId]);
 
      useEffect(() => {
         const handleUserIsTyping = ({ conversationId: incomingConvId, user }) => {

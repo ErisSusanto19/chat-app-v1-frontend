@@ -9,7 +9,13 @@ import { SquarePen, ListFilter, UserPlus } from 'lucide-react';
 import useDebounce from '@/hooks/useDebounce';
 import { socket } from '../lib/socket';
 import { useDispatch, useSelector } from 'react-redux';
-import { receiveNewMessage, updateConversationInList, addNewConversationToList } from '../features/conversations/conversationSlice';
+import { 
+    receiveNewMessage, 
+    updateConversationInList, 
+    addNewConversationToList,
+    updateMessagesStatus,
+    updateAllMessagesToRead
+} from '../features/conversations/conversationSlice';
 
 const MENU_CONFIG = {
     conversations: {
@@ -58,11 +64,33 @@ const HomePage = () => {
             dispatch(addNewConversationToList(newConversationData));
         };
 
+        const handleMessagesDelivered = ({ updates }) => {
+            console.log("Payload 'messages_delivered' diterima:", updates);
+            if (updates) {
+                for (const conversationId in updates) {
+                    const messageIds = updates[conversationId];
+                    if (messageIds && messageIds.length > 0) {
+                        dispatch(updateMessagesStatus({
+                            conversationId,
+                            messageIds,
+                            status: 'delivered'
+                        }));
+                    }
+                }
+            }
+        };
+
+        const handleMessagesRead = ({ conversationId }) => {
+            dispatch(updateAllMessagesToRead({ conversationId }));
+        };
+
         socket.on('connect', handleConnect);
         socket.on('disconnect', handleDisconnect);
         socket.on('receive_message', handleReceiveMessage);
         socket.on('conversation_updated', handleConversationUpdate);
         socket.on('new_conversation_received', handleNewConversation);
+        socket.on('messages_delivered', handleMessagesDelivered);
+        socket.on('messages_read', handleMessagesRead);
         
         return () => {
             socket.off('connect', handleConnect);
@@ -70,6 +98,8 @@ const HomePage = () => {
             socket.off('receive_message', handleReceiveMessage);
             socket.off('conversation_updated', handleConversationUpdate);
             socket.off('new_conversation_received', handleNewConversation);
+            socket.off('messages_delivered', handleMessagesDelivered);
+            socket.off('messages_read', handleMessagesRead);
             
             socket.disconnect();
         };

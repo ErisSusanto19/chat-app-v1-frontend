@@ -1,8 +1,25 @@
 import React, { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { format } from 'date-fns'
-import { Clock, AlertCircle, Trash2, Edit, MoreVertical, X, Check, File } from 'lucide-react';
+import { Clock, AlertCircle, Trash2, Edit, MoreVertical, X, Check, File, CheckCheck } from 'lucide-react';
 import DropdownMenu, { DropdownMenuItem } from '@/shared/ui/DropdownMenu';
+
+const MessageStatusIcon = ({ status }) => {
+    switch (status) {
+        case 'sending':
+            return <Clock size={16} className="text-amber-200" />;
+        case 'sent':
+            return <Check size={16} className="text-amber-200" />;
+        case 'delivered':
+            return <CheckCheck size={16} className="text-amber-200" />;
+        case 'read':
+            return <CheckCheck size={16} className="text-sky-300" />;
+        case 'failed':
+            return <AlertCircle size={16} className="text-red-300" />;
+        default:
+            return null;
+    }
+};
 
 const MessageBubble = ({ message, isOwnMessage, onDeleteForMe, onEdit, onDeleteForAll, isEditing, onStartEdit, onCancelEdit, }) => {
 
@@ -118,6 +135,7 @@ const MessageBubble = ({ message, isOwnMessage, onDeleteForMe, onEdit, onDeleteF
                             <p className={clsx("text-xs", isOwnMessage ? 'text-amber-200' : 'text-gray-400')}>
                                     {displayTime}
                             </p>
+                            {isOwnMessage && <MessageStatusIcon status={message.status} />}
                             {isOwnMessage && message.status === 'sending' && (
                                 <Clock size={12} className="text-amber-200" />
                             )}

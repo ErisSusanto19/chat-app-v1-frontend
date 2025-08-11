@@ -40,7 +40,9 @@ const conversationSlice = createSlice({
         receiveNewMessage: (state, action) => {
             const newMessage = action.payload;
             if (state.currentConversation && state.currentConversation._id === newMessage.conversationId) {
-                state.currentConversation.messages.push(newMessage);
+                if (!state.currentConversation.messages.find(m => m._id === newMessage._id)) {
+                    state.currentConversation.messages.push(newMessage);
+                }
             }
         },
 
@@ -73,6 +75,60 @@ const conversationSlice = createSlice({
             if (!exists) {
                 state.items.unshift(newConversation);
             }
+        },
+
+        updateMessagesStatus: (state, action) => {
+            const { conversationId, messageIds, status } = action.payload;
+            const messageIdSet = new Set(messageIds)
+
+            if (state.currentConversation && state.currentConversation._id === conversationId) {
+                 state.currentConversation.messages = state.currentConversation.messages.map(message => {
+                    if (messageIdSet.has(message._id)) {
+                        return { ...message, status: status };
+                    }
+                    return message;
+                });
+            }
+
+            const convoIndex = state.items.findIndex(c => c.conversationId === conversationId);
+            if (convoIndex !== -1) {
+                const conversationToUpdate = state.items[convoIndex];
+                if (conversationToUpdate.lastMessage && messageIdSet.has(conversationToUpdate.lastMessage.message_id)) {
+                    state.items[convoIndex] = {
+                        ...conversationToUpdate,
+                        lastMessage: {
+                            ...conversationToUpdate.lastMessage,
+                            status: status
+                        }
+                    };
+                }
+            }
+        },
+        
+        updateAllMessagesToRead: (state, action) => {
+            const { conversationId } = action.payload;
+            const messageIdSet = new Set();
+
+            if (state.currentConversation && state.currentConversation._id === conversationId) {
+                state.currentConversation.messages = state.currentConversation.messages.map(message => {
+                    if (message.status !== 'read') {
+                        messageIdSet.add(message._id);
+                        return { ...message, status: 'read' };
+                    }
+                    return message;
+                });
+            }
+
+            const convoIndex = state.items.findIndex(c => c.conversationId === conversationId);
+            if (convoIndex !== -1 && state.items[convoIndex].lastMessage) {
+                 state.items[convoIndex] = {
+                    ...state.items[convoIndex],
+                    lastMessage: {
+                        ...state.items[convoIndex].lastMessage,
+                        status: 'read'
+                    }
+                };
+            }
         }
     },
 
@@ -89,6 +145,13 @@ const conversationSlice = createSlice({
     }
 });
 
-export const { clearCurrentConversation, receiveNewMessage, updateConversationInList, addNewConversationToList } = conversationSlice.actions;
+export const { 
+    clearCurrentConversation, 
+    receiveNewMessage, 
+    updateConversationInList, 
+    addNewConversationToList,
+    updateMessagesStatus,
+    updateAllMessagesToRead
+} = conversationSlice.actions;
 
 export default conversationSlice.reducer;
