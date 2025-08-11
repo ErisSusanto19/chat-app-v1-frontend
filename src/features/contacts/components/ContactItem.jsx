@@ -2,7 +2,7 @@ import Avatar from '@/shared/ui/Avatar';
 import clsx from 'clsx';
 
 const ContactItem = ({ contact, onSelect, isSelected }) => {
-    const displayName = contact.name || contact.detail?.name;
+    const displayName = contact.name || contact.email;
     const displayImage = contact.detail?.image;
 
     return (

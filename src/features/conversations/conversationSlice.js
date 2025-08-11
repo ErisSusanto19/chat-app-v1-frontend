@@ -25,6 +25,7 @@ import {
 const initialState = {
     items: [],
     currentConversation: null,
+    totalUnreadCount: 0,
     loading: false,
     error: null,
 };
@@ -46,34 +47,29 @@ const conversationSlice = createSlice({
             }
         },
 
-        updateConversationInList: (state, action) => {
-            const { conversationId, lastMessage } = action.payload;
-
-            const indexToUpdate = state.items.findIndex(
-                item => item.conversationId.toString() === conversationId.toString()
-            );
-
-            if (indexToUpdate !== -1) {
-                const itemToUpdate = state.items[indexToUpdate];
-                const updatedItem = {
-                    ...itemToUpdate,
-                    lastMessage: lastMessage
-                };
-                
-                const newItems = state.items.filter(
-                    item => item.conversationId.toString() !== conversationId.toString()
-                );
-                newItems.unshift(updatedItem);
-                
-                state.items = newItems;
-            }
-        },
-
         addNewConversationToList: (state, action) => {
             const newConversation = action.payload;
             const exists = state.items.some(item => item.conversationId === newConversation.conversationId);
             if (!exists) {
                 state.items.unshift(newConversation);
+                state.totalUnreadCount += newConversation.unreadCount || 0;
+            }
+        },
+
+        updateConversationInList: (state, action) => {
+            const updatedConversation = action.payload;
+            const indexToUpdate = state.items.findIndex(item => item.conversationId === updatedConversation.conversationId);
+
+            if (indexToUpdate !== -1) {
+                // console.log(`[DEBUG SLICE] Found conversation to update at index ${indexToUpdate}. unreadCount BEFORE: ${state.items[indexToUpdate].unreadCount}`);
+                state.items[indexToUpdate] = updatedConversation;
+                const item = state.items.splice(indexToUpdate, 1)[0];
+                state.items.unshift(item);
+                
+                state.totalUnreadCount = state.items.reduce((total, convo) => total + (convo.unreadCount || 0), 0);
+                // console.log(`[DEBUG SLICE] unreadCount AFTER: ${state.items[0].unreadCount}. New total: ${state.totalUnreadCount}`);
+            } else {
+                // console.log("[DEBUG SLICE] Did not find conversation to update.");
             }
         },
 
@@ -93,7 +89,7 @@ const conversationSlice = createSlice({
             const convoIndex = state.items.findIndex(c => c.conversationId === conversationId);
             if (convoIndex !== -1) {
                 const conversationToUpdate = state.items[convoIndex];
-                if (conversationToUpdate.lastMessage && messageIdSet.has(conversationToUpdate.lastMessage.message_id)) {
+                if (conversationToUpdate.lastMessage && conversationToUpdate.lastMessage.status === 'sent') {
                     state.items[convoIndex] = {
                         ...conversationToUpdate,
                         lastMessage: {
@@ -107,27 +103,24 @@ const conversationSlice = createSlice({
         
         updateAllMessagesToRead: (state, action) => {
             const { conversationId } = action.payload;
-            const messageIdSet = new Set();
-
-            if (state.currentConversation && state.currentConversation._id === conversationId) {
-                state.currentConversation.messages = state.currentConversation.messages.map(message => {
-                    if (message.status !== 'read') {
-                        messageIdSet.add(message._id);
-                        return { ...message, status: 'read' };
-                    }
-                    return message;
-                });
-            }
-
             const convoIndex = state.items.findIndex(c => c.conversationId === conversationId);
-            if (convoIndex !== -1 && state.items[convoIndex].lastMessage) {
-                 state.items[convoIndex] = {
-                    ...state.items[convoIndex],
-                    lastMessage: {
-                        ...state.items[convoIndex].lastMessage,
-                        status: 'read'
-                    }
+
+            if (convoIndex !== -1) {
+                const conversationToUpdate = state.items[convoIndex];
+                const countToDecrement = conversationToUpdate.unreadCount || 0;
+                state.totalUnreadCount -= countToDecrement;
+
+                state.items[convoIndex] = {
+                    ...conversationToUpdate,
+                    unreadCount: 0,
+                    lastMessage: conversationToUpdate.lastMessage ? { ...conversationToUpdate.lastMessage, status: 'read' } : null
                 };
+            }
+            
+            if (state.currentConversation && state.currentConversation._id === conversationId) {
+                state.currentConversation.messages = state.currentConversation.messages.map(message => 
+                    message.status !== 'read' ? { ...message, status: 'read' } : message
+                );
             }
         }
     },

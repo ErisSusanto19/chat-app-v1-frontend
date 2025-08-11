@@ -55,12 +55,11 @@ const HomePage = () => {
         };
 
         const handleConversationUpdate = (updateData) => {
-            console.log("HomePage received a conversation update:", updateData);
+            // console.log("[DEBUG HOMEPAGE] Received 'conversation_updated' with payload:", updateData);
             dispatch(updateConversationInList(updateData));
         };
         
         const handleNewConversation = (newConversationData) => {
-            console.log("Received a new conversation!", newConversationData);
             dispatch(addNewConversationToList(newConversationData));
         };
 

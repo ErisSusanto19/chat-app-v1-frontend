@@ -5,9 +5,10 @@ import { useSelector } from 'react-redux';
 const IconSidebar = ({ activeMenu, onMenuSelect, isExpanded, onToggle, onCloseMobile, onProfileClick }) => {
 
     const { user } = useSelector((state) => state.auth);
+    const totalUnreadCount = useSelector((state) => state.conversations.totalUnreadCount);
 
     const mainMenuItems = [
-        { id: 'conversations', text: 'Percakapan', icon: <MessageSquareText size={24} />, notificationCount: 93 },
+        { id: 'conversations', text: 'Percakapan', icon: <MessageSquareText size={24} />, notificationCount: totalUnreadCount },
         { id: 'contacts', text: 'Kontak', icon: <Users size={24} />, notificationCount: 0 },
     ];
 

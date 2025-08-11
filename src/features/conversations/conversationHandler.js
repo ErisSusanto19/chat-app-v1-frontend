@@ -7,6 +7,7 @@ export const handleFetchConversations = (builder, { fetchConversations }) => {
         .addCase(fetchConversations.fulfilled, (state, action) => {
             state.loading = false;
             state.items = action.payload;
+            state.totalUnreadCount = action.payload.reduce((total, convo) => total + (convo.unreadCount || 0), 0);
         })
         .addCase(fetchConversations.rejected, (state, action) => {
             state.loading = false;
@@ -141,7 +142,7 @@ export const handleSendMessage = (builder, { sendMessage }) => {
                     ...conversationToUpdate,
 
                     lastMessage: {
-                        _id: finalMessage._id,
+                        message_id: finalMessage._id,
                         content: finalMessage.content,
                         senderId: finalMessage.senderId,
                         createdAt: finalMessage.createdAt,

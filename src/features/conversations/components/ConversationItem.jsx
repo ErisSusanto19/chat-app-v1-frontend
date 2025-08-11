@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import { File as FileIcon, Image as ImageIcon } from 'lucide-react'
 
 const ConversationItem = ({ conversation, onSelect, isSelected }) => {
+
     const displayName = conversation.name;
     const displayImage = conversation.image;
     
@@ -23,13 +24,13 @@ const ConversationItem = ({ conversation, onSelect, isSelected }) => {
 
         const msgType = lastMsg.content?.type;
         const msgText = lastMsg.content?.message;
-        const fileName = lastMsg.content?.metadata?.fileName; // Jika Anda sudah menambahkan metadata
+        const fileName = lastMsg.content?.metadata?.fileName;
 
         if (msgType === 'image') {
             return (
                 <div className="flex items-center gap-1 text-gray-500">
                     <ImageIcon size={16} />
-                    <span>{msgText || 'Image'}</span> {/* Menampilkan caption atau 'Image' */}
+                    <span>{msgText || 'Image'}</span>
                 </div>
             );
         }
@@ -38,7 +39,7 @@ const ConversationItem = ({ conversation, onSelect, isSelected }) => {
             return (
                 <div className="flex items-center gap-1 text-gray-500">
                     <FileIcon size={16} />
-                    <span>{fileName || msgText || 'File'}</span> {/* Menampilkan nama file atau 'File' */}
+                    <span>{fileName || msgText || 'File'}</span>
                 </div>
             );
         }
