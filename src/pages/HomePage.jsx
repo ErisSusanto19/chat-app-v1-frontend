@@ -16,7 +16,8 @@ import {
     updateMessagesStatus,
     updateAllMessagesToRead,
     setUserOnline,
-    setUserOffline
+    setUserOffline,
+    updatePartnerDetails
 } from '../features/conversations/conversationSlice';
 
 const MENU_CONFIG = {
@@ -65,7 +66,6 @@ const HomePage = () => {
         };
 
         const handleMessagesDelivered = ({ updates }) => {
-            console.log("Payload 'messages_delivered' diterima:", updates);
             if (updates) {
                 for (const conversationId in updates) {
                     const messageIds = updates[conversationId];
@@ -92,6 +92,10 @@ const HomePage = () => {
             dispatch(setUserOffline({ userId }));
         };
 
+        const handlePartnerProfileUpdated = (data) => {
+            dispatch(updatePartnerDetails(data))
+        }
+
         socket.on('connect', handleConnect);
         socket.on('disconnect', handleDisconnect);
         socket.on('receive_message', handleReceiveMessage);
@@ -101,6 +105,7 @@ const HomePage = () => {
         socket.on('messages_read', handleMessagesRead);
         socket.on('user_online', handleUserOnline);
         socket.on('user_offline', handleUserOffline);
+        socket.on('profile_updated', handlePartnerProfileUpdated)
         
         return () => {
             socket.off('connect', handleConnect);
@@ -112,6 +117,7 @@ const HomePage = () => {
             socket.off('messages_read', handleMessagesRead);
             socket.off('user_online', handleUserOnline);
             socket.off('user_offline', handleUserOffline);
+            socket.off('profile_updated', handlePartnerProfileUpdated)
             
             socket.disconnect();
         };

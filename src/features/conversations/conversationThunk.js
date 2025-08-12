@@ -21,9 +21,6 @@ export const fetchConversations = createAsyncThunk(
 
                 return convo
             })
-
-            console.log(conversationsWithOnlineStatus, "cek list converations from thunk");
-            
        
             return conversationsWithOnlineStatus;
         } catch (error) {

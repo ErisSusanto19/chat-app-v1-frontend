@@ -143,6 +143,33 @@ const conversationSlice = createSlice({
             if (state.currentConversation?.partnerDetails?._id === userId) {
                 state.currentConversation.partnerDetails.isOnline = false;
             }
+        },
+
+        updatePartnerDetails: (state, action) => {
+            const { userId, name, image } = action.payload;
+
+            state.items = state.items.map(item => {
+                if (item.partner?._id === userId) {
+                    return {
+                        ...item,
+                        name: name,
+                        image: image,
+                        partner: {
+                            ...item.partner,
+                            name: name,
+                            image: image
+                        }
+                    };
+                }
+                return item;
+            });
+
+            if (state.currentConversation?.partner?._id === userId) {
+                state.currentConversation.name = name;
+                state.currentConversation.image = name;
+                state.currentConversation.partner.name = name;
+                state.currentConversation.partner.image = image;
+            }
         }
     },
 
@@ -167,7 +194,8 @@ export const {
     updateMessagesStatus,
     updateAllMessagesToRead,
     setUserOnline,
-    setUserOffline
+    setUserOffline,
+    updatePartnerDetails
 } = conversationSlice.actions;
 
 export default conversationSlice.reducer;

@@ -68,7 +68,16 @@ const ConversationItem = ({ conversation, onSelect, isSelected }) => {
                     <p className="font-semibold text-gray-800 truncate">{displayName}</p>
                     <p className="text-xs text-gray-500 flex-shrink-0 ml-2">{displayTime}</p>
                 </div>
-                <div className="text-sm text-gray-600 truncate">{renderLastMessage()}</div>
+                <div className="flex justify-between items-start mt-1">
+                    <div className="text-sm text-gray-600 truncate">{renderLastMessage()}</div>
+                     {conversation.unreadCount > 0 && (
+                        <div 
+                            className="bg-green-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0"
+                        >
+                            {conversation.unreadCount}
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );
