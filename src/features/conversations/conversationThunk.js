@@ -1,12 +1,31 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import * as conversationApi from './conversationApi';
+import axiosInstance from '@/services/axiosInstance'
 
 export const fetchConversations = createAsyncThunk(
     'conversations/fetchAll',
     async (_, { rejectWithValue }) => {
         try {
-            const response = await conversationApi.getConversations();
-            return response;
+            const [conversationsResponse, onlineContactsResponse] = await Promise.all([
+                conversationApi.getConversations(),
+                axiosInstance.get('/users/online-contacts')
+            ])
+
+            const conversations = conversationsResponse
+            const onlineContactIds = new Set(onlineContactsResponse.data)
+
+            const conversationsWithOnlineStatus = conversations.map(convo => {
+                if(convo.partner?._id && onlineContactIds.has(convo.partner._id)){
+                    return {...convo, partner: { ...convo.partner, isOnline: true}}
+                }
+
+                return convo
+            })
+
+            console.log(conversationsWithOnlineStatus, "cek list converations from thunk");
+            
+       
+            return conversationsWithOnlineStatus;
         } catch (error) {
             const message = error.response?.data?.message || error.message;
             return rejectWithValue(message);

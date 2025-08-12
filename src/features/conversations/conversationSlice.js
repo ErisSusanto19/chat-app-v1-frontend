@@ -61,15 +61,11 @@ const conversationSlice = createSlice({
             const indexToUpdate = state.items.findIndex(item => item.conversationId === updatedConversation.conversationId);
 
             if (indexToUpdate !== -1) {
-                // console.log(`[DEBUG SLICE] Found conversation to update at index ${indexToUpdate}. unreadCount BEFORE: ${state.items[indexToUpdate].unreadCount}`);
                 state.items[indexToUpdate] = updatedConversation;
                 const item = state.items.splice(indexToUpdate, 1)[0];
                 state.items.unshift(item);
                 
                 state.totalUnreadCount = state.items.reduce((total, convo) => total + (convo.unreadCount || 0), 0);
-                // console.log(`[DEBUG SLICE] unreadCount AFTER: ${state.items[0].unreadCount}. New total: ${state.totalUnreadCount}`);
-            } else {
-                // console.log("[DEBUG SLICE] Did not find conversation to update.");
             }
         },
 
@@ -122,6 +118,31 @@ const conversationSlice = createSlice({
                     message.status !== 'read' ? { ...message, status: 'read' } : message
                 );
             }
+        },
+
+        setUserOnline: (state, action) => {
+            const { userId } = action.payload;
+            state.items.forEach(item => {
+                if (item.partner?._id === userId) {
+                    item.partner.isOnline = true;
+                }
+            });
+
+            if (state.currentConversation?.partnerDetails?._id === userId) {
+                state.currentConversation.partnerDetails.isOnline = true;
+            }
+        },
+
+        setUserOffline: (state, action) => {
+            const { userId } = action.payload;
+            state.items.forEach(item => {
+                if (item.partner?._id === userId) {
+                    item.partner.isOnline = false;
+                }
+            });
+            if (state.currentConversation?.partnerDetails?._id === userId) {
+                state.currentConversation.partnerDetails.isOnline = false;
+            }
         }
     },
 
@@ -144,7 +165,9 @@ export const {
     updateConversationInList, 
     addNewConversationToList,
     updateMessagesStatus,
-    updateAllMessagesToRead
+    updateAllMessagesToRead,
+    setUserOnline,
+    setUserOffline
 } = conversationSlice.actions;
 
 export default conversationSlice.reducer;

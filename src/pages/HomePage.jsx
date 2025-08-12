@@ -14,7 +14,9 @@ import {
     updateConversationInList, 
     addNewConversationToList,
     updateMessagesStatus,
-    updateAllMessagesToRead
+    updateAllMessagesToRead,
+    setUserOnline,
+    setUserOffline
 } from '../features/conversations/conversationSlice';
 
 const MENU_CONFIG = {
@@ -55,7 +57,6 @@ const HomePage = () => {
         };
 
         const handleConversationUpdate = (updateData) => {
-            // console.log("[DEBUG HOMEPAGE] Received 'conversation_updated' with payload:", updateData);
             dispatch(updateConversationInList(updateData));
         };
         
@@ -83,6 +84,14 @@ const HomePage = () => {
             dispatch(updateAllMessagesToRead({ conversationId }));
         };
 
+        const handleUserOnline = ({ userId }) => {
+            dispatch(setUserOnline({ userId }));
+        };
+
+        const handleUserOffline = ({ userId }) => {
+            dispatch(setUserOffline({ userId }));
+        };
+
         socket.on('connect', handleConnect);
         socket.on('disconnect', handleDisconnect);
         socket.on('receive_message', handleReceiveMessage);
@@ -90,6 +99,8 @@ const HomePage = () => {
         socket.on('new_conversation_received', handleNewConversation);
         socket.on('messages_delivered', handleMessagesDelivered);
         socket.on('messages_read', handleMessagesRead);
+        socket.on('user_online', handleUserOnline);
+        socket.on('user_offline', handleUserOffline);
         
         return () => {
             socket.off('connect', handleConnect);
@@ -99,6 +110,8 @@ const HomePage = () => {
             socket.off('new_conversation_received', handleNewConversation);
             socket.off('messages_delivered', handleMessagesDelivered);
             socket.off('messages_read', handleMessagesRead);
+            socket.off('user_online', handleUserOnline);
+            socket.off('user_offline', handleUserOffline);
             
             socket.disconnect();
         };
