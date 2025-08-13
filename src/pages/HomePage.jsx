@@ -19,6 +19,9 @@ import {
     setUserOffline,
     updatePartnerDetails
 } from '../features/conversations/conversationSlice';
+import { fetchConversations } from '../features/conversations/conversationThunk'
+import { resetContactList } from '../features/contacts/contactSlice'
+import { fetchContacts } from '../features/contacts/contactThunk'
 
 const MENU_CONFIG = {
     conversations: {
@@ -136,6 +139,15 @@ const HomePage = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
+    useEffect(() => {
+        if (activeMenu === 'conversations') {
+            dispatch(fetchConversations(debouncedSearchTerm));
+        } else if (activeMenu === 'contacts') {
+            dispatch(resetContactList());
+            dispatch(fetchContacts({ page: 1, search: debouncedSearchTerm }));
+        }
+    }, [debouncedSearchTerm, activeMenu, dispatch]);
+
     const handleToggleSidebar = () => setIsExpanded(prev => !prev);
     const handleToggleMobileMode = () => setIsMobileMode(prev => !prev);
 
@@ -188,6 +200,7 @@ const HomePage = () => {
                         setActiveMenu(menu);
                         setSelectedId(null);
                         setIsMobileMode(false);
+                        setSearchTerm('');
                     }}
                     onProfileClick={() => setIsProfileModalOpen(true)}
                 />

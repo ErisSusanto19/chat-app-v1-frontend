@@ -1,7 +1,11 @@
 import axiosInstance from '@/services/axiosInstance';
 
-export const getConversations = async () => {
-    const response = await axiosInstance.get('/user-conversations');
+export const getConversations = async (searchQuery) => {
+    const response = await axiosInstance.get('/user-conversations', {
+        params: {
+            search: searchQuery
+        }
+    });
     return response.data;
 };
 

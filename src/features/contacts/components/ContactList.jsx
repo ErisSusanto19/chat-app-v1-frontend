@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import ContactItem from './ContactItem';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchContacts } from '../contactThunk';
-import { resetContactList } from '../contactSlice';
 import PageLoader from '@/shared/ui/PageLoader';
 
 const ContactList = ({ onContactSelect, selectedId, searchTerm }) => {
@@ -20,11 +19,6 @@ const ContactList = ({ onContactSelect, selectedId, searchTerm }) => {
       });
       if (node) observer.current.observe(node);
   }, [loading, currentPage, totalPages, dispatch, searchTerm]);
-
-  useEffect(() => {
-    dispatch(resetContactList()); 
-    dispatch(fetchContacts({ page: 1, search: searchTerm }));
-  }, [searchTerm, dispatch]);
 
   if(loading && contacts.length === 0){
     return <PageLoader message="Loading contacts..."/>;
