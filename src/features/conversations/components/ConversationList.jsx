@@ -6,6 +6,9 @@ import ConversationItem from './ConversationItem';
 const ConversationList = ({ onConversationSelect, selectedId }) => {
     const dispatch = useDispatch();
     const { items: conversations, loading } = useSelector(state => state.conversations);
+    console.log(conversations, '<<< cek conversations from ConversationList');
+    console.log(selectedId, '<<< cek selectedId from ConversationList');
+        
 
     useEffect(() => {
         if (conversations.length === 0) {

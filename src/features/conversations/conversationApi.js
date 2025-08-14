@@ -53,3 +53,11 @@ export const deleteMessageForAll = async ({ conversationId, messageId }) => {
     const response = await axiosInstance.patch(`/conversations/${conversationId}/messages/${messageId}/delete-for-all`);
     return response.data;
 };
+
+export const getMessages = async (conversationId, page) => {
+    const response = await axiosInstance.get(`/conversations/${conversationId}/messages`, {
+        params: { page }
+    })
+
+    return response.data
+}

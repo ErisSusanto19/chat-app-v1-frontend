@@ -48,7 +48,7 @@ const NewConversationModal = ({ isOpen, onClose, onConversationCreated }) => {
             const newConversation = resultAction.payload.data;
             toast.success(resultAction.payload.message || 'Conversation started!');
 
-            await dispatch(fetchConversations());
+            // await dispatch(fetchConversations());
 
             if (onConversationCreated) {
                 onConversationCreated(newConversation.conversationId);

@@ -39,12 +39,18 @@ export const handleAddConversation = (builder, { addConversation }) => {
         })
         .addCase(addConversation.fulfilled, (state, action) => {
             state.loading = false;
-            // const newConversation = action.payload.data;
-            
-            // const existingIndex = state.items.findIndex(item => item._id === newConversation._id);
-            // if (existingIndex === -1) {
-            //     state.items.unshift(newConversation);
-            // }
+            const newConversation = action.payload.data;
+
+            if (!newConversation || !newConversation.conversationId) {
+                console.error("handleAddConversation.fulfilled: Payload tidak valid", action.payload);
+                return;
+            }
+
+            const existingIndex = state.items.findIndex(item => item.conversationId === newConversation.conversationId);
+
+            if (existingIndex === -1) {
+                state.items.unshift(newConversation);
+            }
         })
         .addCase(addConversation.rejected, (state, action) => {
             state.loading = false;
@@ -223,3 +229,11 @@ export const handleDeleteMessageForAll = (builder, { deleteMessageForAll }) => {
             }
         });
 };
+
+export const handleFetchMessages = (builder, { fetchMessages }) => {
+    builder
+        .addCase(fetchMessages.fulfilled, (state, action) => {
+            const { conversationId, messages } = action.payload
+            state.messages[conversationId] = messages
+        })
+}

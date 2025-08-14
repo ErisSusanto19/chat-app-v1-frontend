@@ -7,7 +7,7 @@ export const fetchConversations = createAsyncThunk(
         try {
             
             const conversations = await conversationApi.getConversations(searchQuery)
-       
+            console.log(`[FETCH-CONVERSATION]: `, conversations)
             return conversations;
 
         } catch (error) {
@@ -35,6 +35,8 @@ export const addConversation = createAsyncThunk(
     async (data, { rejectWithValue }) => {
         try {
             const response = await conversationApi.createConversation(data);
+            console.log(`[ADD-CONVERSATION]: `, response);
+            
             return response;
         } catch (error) {
             const message = error.response?.data?.message || error.message;
@@ -87,6 +89,8 @@ export const sendMessage = createAsyncThunk(
     async ({ conversationId, messageData }, { rejectWithValue }) => {
         try {
             const response = await conversationApi.sendMessage({ conversationId, messageData });
+            console.log(`[ADD-MESSAGE]: `, response);
+            
             return response;
         } catch (error) {
             const message = error.response?.data?.message || error.message;
@@ -133,3 +137,16 @@ export const deleteMessageForAll = createAsyncThunk(
         }
     }
 );
+
+export const fetchMessages = createAsyncThunk(
+    'conversations/fetchMessages',
+    async ({conversationId, page = 1}, { rejectWithValue }) => {
+        try {
+            const response = await conversationApi.getMessages(conversationId, page)
+            return {conversationId, messages: response}
+        } catch (error) {
+            const message = error.response?.data?.message || error.message
+            return rejectWithValue(message)
+        }
+    }
+)

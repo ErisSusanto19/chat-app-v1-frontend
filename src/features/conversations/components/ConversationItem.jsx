@@ -5,7 +5,6 @@ import { format } from 'date-fns';
 import { File as FileIcon, Image as ImageIcon } from 'lucide-react'
 
 const ConversationItem = ({ conversation, onSelect, isSelected }) => {
-
     const displayName = conversation.name;
     const displayImage = conversation.image;
     

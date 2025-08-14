@@ -8,7 +8,8 @@ import {
     sendMessage,
     editMessage,
     deleteMessageForMe,
-    deleteMessageForAll
+    deleteMessageForAll,
+    fetchMessages
 } from './conversationThunk';
 import { 
     handleFetchConversations,
@@ -19,12 +20,14 @@ import {
     handleSendMessage,
     handleEditMessage,
     handleDeleteMessageForMe,
-    handleDeleteMessageForAll
+    handleDeleteMessageForAll,
+    handleFetchMessages
 } from './conversationHandler';
 
 const initialState = {
     items: [],
     currentConversation: null,
+    messages: {},
     totalUnreadCount: 0,
     loading: false,
     error: null,
@@ -40,10 +43,10 @@ const conversationSlice = createSlice({
 
         receiveNewMessage: (state, action) => {
             const newMessage = action.payload;
-            if (state.currentConversation && state.currentConversation._id === newMessage.conversationId) {
-                if (!state.currentConversation.messages.find(m => m._id === newMessage._id)) {
-                    state.currentConversation.messages.push(newMessage);
-                }
+
+            const { conversationId } = newMessage;
+            if (state.messages[conversationId]) {
+                state.messages[conversationId].push(newMessage);
             }
         },
 
@@ -73,8 +76,8 @@ const conversationSlice = createSlice({
             const { conversationId, messageIds, status } = action.payload;
             const messageIdSet = new Set(messageIds)
 
-            if (state.currentConversation && state.currentConversation._id === conversationId) {
-                 state.currentConversation.messages = state.currentConversation.messages.map(message => {
+             if (state.messages[conversationId]) {
+                state.messages[conversationId] = state.messages[conversationId].map(message => {
                     if (messageIdSet.has(message._id)) {
                         return { ...message, status: status };
                     }
@@ -102,19 +105,21 @@ const conversationSlice = createSlice({
             const convoIndex = state.items.findIndex(c => c.conversationId === conversationId);
 
             if (convoIndex !== -1) {
-                const conversationToUpdate = state.items[convoIndex];
-                const countToDecrement = conversationToUpdate.unreadCount || 0;
-                state.totalUnreadCount -= countToDecrement;
+                const countToDecrement = state.items[convoIndex].unreadCount || 0;
+                state.totalUnreadCount = Math.max(0, state.totalUnreadCount - countToDecrement);
 
                 state.items[convoIndex] = {
-                    ...conversationToUpdate,
+                    ...state.items[convoIndex],
                     unreadCount: 0,
-                    lastMessage: conversationToUpdate.lastMessage ? { ...conversationToUpdate.lastMessage, status: 'read' } : null
+
+                    lastMessage: state.items[convoIndex].lastMessage 
+                        ? { ...state.items[convoIndex].lastMessage, status: 'read' } 
+                        : null
                 };
             }
             
-            if (state.currentConversation && state.currentConversation._id === conversationId) {
-                state.currentConversation.messages = state.currentConversation.messages.map(message => 
+            if (state.messages[conversationId]) {
+                state.messages[conversationId] = state.messages[conversationId].map(message => 
                     message.status !== 'read' ? { ...message, status: 'read' } : message
                 );
             }
@@ -128,8 +133,8 @@ const conversationSlice = createSlice({
                 }
             });
 
-            if (state.currentConversation?.partnerDetails?._id === userId) {
-                state.currentConversation.partnerDetails.isOnline = true;
+            if (state.currentConversation?.partner?._id === userId) {
+                state.currentConversation.partner.isOnline = true;
             }
         },
 
@@ -140,8 +145,8 @@ const conversationSlice = createSlice({
                     item.partner.isOnline = false;
                 }
             });
-            if (state.currentConversation?.partnerDetails?._id === userId) {
-                state.currentConversation.partnerDetails.isOnline = false;
+            if (state.currentConversation?.partner?._id === userId) {
+                state.currentConversation.partner.isOnline = false;
             }
         },
 
@@ -183,6 +188,7 @@ const conversationSlice = createSlice({
         handleEditMessage(builder, { editMessage });
         handleDeleteMessageForMe(builder, { deleteMessageForMe });
         handleDeleteMessageForAll(builder, { deleteMessageForAll });
+        handleFetchMessages(builder, { fetchMessages })
     }
 });
 

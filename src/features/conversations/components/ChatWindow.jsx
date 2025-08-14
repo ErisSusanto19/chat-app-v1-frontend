@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearCurrentConversation, receiveNewMessage } from '../conversationSlice';
-import { fetchConversationById } from '../conversationThunk'
+import { fetchConversationById, fetchMessages } from '../conversationThunk'
 import ChatHeader from './ChatHeader';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
@@ -12,6 +12,7 @@ const ChatWindow = ({ conversationId, onBack }) => {
     const dispatch = useDispatch();
     const { currentConversation, loading } = useSelector(state => state.conversations);
     const { user: currentUser } = useSelector(state => state.auth);
+    const messages = useSelector(state => state.conversations.messages[conversationId] || [])
 
     const [typingUsers, setTypingUsers] = useState([]);
     const [editingMessageId, setEditingMessageId] = useState(null);
@@ -19,6 +20,7 @@ const ChatWindow = ({ conversationId, onBack }) => {
     useEffect(() => {
         if (conversationId) {
             dispatch(fetchConversationById(conversationId));
+            dispatch(fetchMessages({ conversationId }));
         }
 
         return () => {
@@ -39,7 +41,7 @@ const ChatWindow = ({ conversationId, onBack }) => {
 
     useEffect(() => {
         if (currentConversation && currentUser) {
-            const hasUnreadMessages = currentConversation.messages.some(
+            const hasUnreadMessages = messages.some(
                 msg => msg.status !== 'read' && msg.senderId !== currentUser._id
             );
 
@@ -83,12 +85,12 @@ const ChatWindow = ({ conversationId, onBack }) => {
                 typingUsers={typingUsers}
             />
             <MessageList 
-                messages={currentConversation.messages}
+                messages={messages}
                 editingMessageId={editingMessageId}
                 setEditingMessageId={setEditingMessageId}
             />
             {!editingMessageId && (
-                <MessageInput conversationId={currentConversation._id} />
+                <MessageInput conversationId={currentConversation.conversationId} />
             )}
         </div>
     );
