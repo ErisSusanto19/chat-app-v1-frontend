@@ -11,8 +11,10 @@ import Button from '@/shared/ui/Button'
 import { Edit } from 'lucide-react'
 import ConfirmationModal from '@/shared/ui/ConfirmationModal';
 import axiosInstance from '@/services/axiosInstance';
+import { useNavigate } from 'react-router-dom';
 
 const ProfileModal = ({ isOpen, onClose }) => {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const { data: profile, loading } = useSelector(state => state.profile);
     const [isEditMode, setIsEditMode] = useState(false);

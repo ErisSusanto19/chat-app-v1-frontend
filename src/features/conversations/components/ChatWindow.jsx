@@ -40,16 +40,24 @@ const ChatWindow = ({ conversationId, onBack }) => {
     }, [conversationId]);
 
     useEffect(() => {
-        if (currentConversation && currentUser) {
-            const hasUnreadMessages = messages.some(
-                msg => msg.status !== 'read' && msg.senderId !== currentUser._id
-            );
+        if (currentConversation && currentUser && messages.length > 0) {
+
+            const isNoteToSelf = currentConversation.participants.length === 1 && currentConversation.participants[0].userId === currentUser._id;
+
+            let hasUnreadMessages;
+            if (isNoteToSelf) {
+                hasUnreadMessages = messages.some(msg => msg.status !== 'read');
+            } else {
+                hasUnreadMessages = messages.some(
+                    msg => msg.status !== 'read' && msg.senderId !== currentUser._id
+                );
+            }
 
             if (hasUnreadMessages) {
                 socket.emit('mark_messages_as_read', { conversationId });
             }
         }
-    }, [currentConversation, currentUser, conversationId]);
+    }, [currentConversation, currentUser, conversationId, messages]);
 
      useEffect(() => {
         const handleUserIsTyping = ({ conversationId: incomingConvId, user }) => {
